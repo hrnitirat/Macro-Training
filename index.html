@@ -6,207 +6,202 @@
 <title>ระบบอบรม Macro & VBA — Nitirat</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --dg:#2D5A27; --mg:#4A8C3F; --sg:#6BAE6B;
-  --mint:#EEF7EE; --mint2:#D6EDD6; --cream:#FFFDE7;
-  --blue:#D4EDF7; --purple:#7B5EA7; --pbg:#F3EEF9;
-  --red:#C62828; --rbg:#FFEBEE; --orange:#E65100; --obg:#FFF3E0;
-  --text:#1A2E1A; --muted:#5A7A54; --border:#C8E0C8;
-  --white:#FFFFFF;
+:root{
+  --dg:#2D5A27;--mg:#4A8C3F;--sg:#6BAE6B;
+  --mint:#EEF7EE;--mint2:#D6EDD6;--cream:#FFFDE7;
+  --purple:#7B5EA7;--pbg:#F3EEF9;
+  --red:#C62828;--rbg:#FFEBEE;
+  --orange:#E65100;--obg:#FFF3E0;
+  --text:#1A2E1A;--muted:#5A7A54;--border:#C8E0C8;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);min-height:100vh;}
 
-/* ── Header ── */
+/* Header */
 .hdr{background:var(--dg);padding:1.6rem 2rem 1.4rem;position:relative;overflow:hidden;}
 .hdr::before{content:"";position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(107,174,107,.15);}
 .hdr::after{content:"";position:absolute;bottom:-35px;left:8%;width:120px;height:120px;border-radius:50%;background:rgba(74,140,63,.12);}
 .hdr-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;}
-.org{color:var(--sg);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.45rem;}
-.hdr h1{color:#fff;font-size:1.55rem;font-weight:700;line-height:1.25;}
+.org{color:var(--sg);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
+.hdr h1{color:#fff;font-size:1.5rem;font-weight:700;line-height:1.25;}
 .hdr h1 span{color:var(--sg);}
-.hdr-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;}
-.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.88);font-size:.78rem;padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.14);}
-.live-row{display:flex;align-items:center;justify-content:space-between;margin-top:.8rem;flex-wrap:wrap;gap:.5rem;}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(107,174,107,.2);color:var(--sg);font-size:.72rem;font-weight:600;padding:3px 11px;border-radius:20px;}
+.hdr-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem;}
+.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.88);font-size:.77rem;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.14);}
+.live-row{display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;flex-wrap:wrap;gap:.5rem;}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(107,174,107,.2);color:var(--sg);font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--sg);animation:pulse 2s infinite;}
 .dot.err{background:#EF9A9A;animation:none;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hdr-refresh{padding:4px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.85);font-size:.74rem;cursor:pointer;font-family:"Sarabun",sans-serif;}
-.hdr-refresh:hover{background:rgba(255,255,255,.12);}
+.hdr-btn{padding:4px 12px;border-radius:11px;border:1px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.85);font-size:.74rem;cursor:pointer;font-family:"Sarabun",sans-serif;}
+.hdr-btn:hover{background:rgba(255,255,255,.1);}
 
-/* ── Stats ── */
-.stats{max-width:900px;margin:0 auto;padding:1rem 2rem 0;display:flex;gap:.7rem;flex-wrap:wrap;}
-.stat{background:#fff;border-radius:12px;padding:.75rem 1.1rem;box-shadow:0 1px 8px rgba(45,90,39,.08);flex:1;min-width:130px;border-top:3px solid var(--mint2);transition:border-color .3s;}
-.stat.active{border-top-color:var(--mg);}
-.stat-n{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:500;color:var(--dg);}
-.stat-l{font-size:.7rem;color:var(--muted);margin-top:1px;}
+/* Stats */
+.stats{max-width:900px;margin:0 auto;padding:1rem 2rem 0;display:flex;gap:.65rem;flex-wrap:wrap;}
+.stat{background:#fff;border-radius:11px;padding:.7rem 1rem;box-shadow:0 1px 7px rgba(45,90,39,.08);flex:1;min-width:120px;border-top:3px solid var(--mint2);}
+.stat-n{font-family:"IBM Plex Mono",monospace;font-size:1.4rem;font-weight:500;color:var(--dg);}
+.stat-l{font-size:.68rem;color:var(--muted);margin-top:1px;}
 
-/* ── Tabs ── */
-.tabs-wrap{max-width:900px;margin:.9rem auto 0;padding:0 2rem;display:flex;gap:.4rem;flex-wrap:wrap;}
-.tab{padding:.5rem 1.1rem;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:var(--mint2);color:var(--muted);transition:all .2s;font-family:"Sarabun",sans-serif;}
+/* Tabs */
+.tabs-wrap{max-width:900px;margin:.85rem auto 0;padding:0 2rem;display:flex;gap:.4rem;flex-wrap:wrap;}
+.tab{padding:.48rem 1rem;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;background:var(--mint2);color:var(--muted);transition:all .2s;font-family:"Sarabun",sans-serif;}
 .tab.on{background:var(--dg);color:#fff;}
-.tab.hr-tab.on{background:var(--purple);}
+.tab.hr.on{background:var(--purple);}
 
-/* ── Main ── */
+/* Main */
 .main{max-width:900px;margin:0 auto;padding:.9rem 2rem 2.5rem;}
-.panel{display:none;} .panel.on{display:block;}
+.panel{display:none;}.panel.on{display:block;}
 
-/* ── Round info card ── */
-.round-card{background:#fff;border-radius:12px;padding:.9rem 1.2rem;border-left:4px solid var(--mg);box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.9rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
-.round-card.r2{border-left-color:var(--purple);}
-.rdate{font-size:.88rem;font-weight:600;color:var(--dg);}
-.rmeta{font-size:.76rem;color:var(--muted);margin-top:2px;}
+/* Round info card */
+.rcard{background:#fff;border-radius:11px;padding:.85rem 1.1rem;border-left:4px solid var(--mg);box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.rcard.p{border-left-color:var(--purple);}
+.rdate{font-size:.86rem;font-weight:600;color:var(--dg);}
+.rcard.p .rdate{color:var(--purple);}
+.rmeta{font-size:.74rem;color:var(--muted);margin-top:2px;}
 
-/* ── Cap bar ── */
-.cap-card{background:#fff;border-radius:12px;padding:.9rem 1.2rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.9rem;display:flex;align-items:center;gap:1rem;}
-.cap-n{font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:500;color:var(--dg);min-width:52px;text-align:center;}
-.cap-lbl{font-size:.7rem;color:var(--muted);text-align:center;}
-.cap-bar-wrap{flex:1;}
-.cap-row{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:5px;}
-.cap-bar{height:9px;background:var(--mint2);border-radius:9px;overflow:hidden;}
-.cap-fill{height:100%;background:linear-gradient(90deg,var(--mg),var(--sg));border-radius:9px;transition:width .6s ease;}
-.cap-st{font-size:.74rem;font-weight:600;color:var(--mg);margin-top:4px;}
+/* Cap bar */
+.cap-card{background:#fff;border-radius:11px;padding:.85rem 1.1rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;display:flex;align-items:center;gap:.9rem;}
+.cap-n{font-family:"IBM Plex Mono",monospace;font-size:1.6rem;font-weight:500;color:var(--dg);min-width:48px;text-align:center;}
+.cap-sub{font-size:.68rem;color:var(--muted);text-align:center;}
+.cap-bw{flex:1;}
+.cap-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:4px;}
+.cap-bar{height:8px;background:var(--mint2);border-radius:8px;overflow:hidden;}
+.cap-fill{height:100%;background:linear-gradient(90deg,var(--mg),var(--sg));border-radius:8px;transition:width .6s ease;}
+.cap-st{font-size:.72rem;font-weight:600;color:var(--mg);margin-top:4px;}
 
-/* ── Section head ── */
-.sec-head{display:flex;align-items:center;gap:8px;margin:1.1rem 0 .75rem;}
-.sbadge{display:inline-flex;align-items:center;padding:4px 13px;border-radius:20px;font-size:.8rem;font-weight:600;}
-.sb-g{background:var(--dg);color:#fff;} .sb-p{background:var(--purple);color:#fff;}
-.scnt{font-size:.72rem;color:var(--muted);background:var(--mint2);padding:2px 9px;border-radius:20px;}
+/* Sec head */
+.sh{display:flex;align-items:center;gap:8px;margin:1rem 0 .7rem;}
+.sbadge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600;}
+.sb-g{background:var(--dg);color:#fff;}.sb-p{background:var(--purple);color:#fff;}.sb-o{background:var(--orange);color:#fff;}
+.scnt{font-size:.7rem;color:var(--muted);background:var(--mint2);padding:2px 8px;border-radius:20px;}
 
-/* ── Cards ── */
-.cards{display:flex;flex-direction:column;gap:.45rem;}
-.card{background:#fff;border-radius:11px;padding:.75rem 1rem;display:flex;align-items:center;gap:.8rem;box-shadow:0 1px 5px rgba(45,90,39,.06);border-left:4px solid transparent;animation:fadeUp .35s ease both;}
+/* Cards */
+.cards{display:flex;flex-direction:column;gap:.42rem;}
+.card{background:#fff;border-radius:10px;padding:.7rem .95rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 1px 5px rgba(45,90,39,.06);border-left:4px solid transparent;animation:fadeUp .35s ease both;}
 .card.r1{border-left-color:var(--mg);}
 .card.r2c{border-left-color:var(--purple);background:var(--pbg);}
-.card.present{background:#F1F8E9!important;border-left-color:#388E3C!important;}
-.card.absent{background:var(--rbg)!important;border-left-color:var(--red)!important;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-.rank{font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:500;color:var(--sg);min-width:24px;text-align:center;}
-.card.r2c .rank{color:var(--purple);opacity:.6;}
-.card.absent .rank{color:var(--red);}
-.ava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;color:#fff;}
+.card.swapped-up{border-left-color:var(--orange)!important;background:var(--obg)!important;}
+.card.moved-down{border-left-color:var(--muted)!important;background:#F5F5F5!important;opacity:.75;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.rank{font-family:"IBM Plex Mono",monospace;font-size:.9rem;font-weight:500;color:var(--sg);min-width:22px;text-align:center;}
+.card.r2c .rank{color:var(--purple);opacity:.65;}
+.card.moved-down .rank{color:var(--muted);}
+.card.swapped-up .rank{color:var(--orange);}
+.ava{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0;color:#fff;}
 .card.r1 .ava{background:linear-gradient(135deg,var(--mg),var(--sg));}
 .card.r2c .ava{background:linear-gradient(135deg,var(--purple),#9B7EC8);}
-.card.present .ava{background:linear-gradient(135deg,#388E3C,#66BB6A);}
-.card.absent .ava{background:linear-gradient(135deg,var(--red),#EF5350);}
+.card.swapped-up .ava{background:linear-gradient(135deg,var(--orange),#FF8A65);}
+.card.moved-down .ava{background:#9E9E9E;}
 .ci{flex:1;min-width:0;}
-.cn{font-size:.92rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cn{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .card.r2c .cn{color:var(--purple);}
-.card.absent .cn{color:var(--red);}
-.ck{font-size:.74rem;color:var(--muted);margin-top:1px;}
+.card.moved-down .cn{color:var(--muted);}
+.ck{font-size:.72rem;color:var(--muted);margin-top:1px;}
 .cr{text-align:right;flex-shrink:0;}
-.cid{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--muted);background:var(--mint);padding:2px 6px;border-radius:5px;}
+.cid{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--muted);background:var(--mint);padding:1px 6px;border-radius:5px;}
 .card.r2c .cid{background:rgba(123,94,167,.1);color:var(--purple);}
-.ct{font-size:.65rem;color:var(--muted);margin-top:2px;}
-.tag{font-size:.63rem;font-weight:600;padding:2px 7px;border-radius:9px;display:inline-block;margin-top:2px;}
+.ct{font-size:.63rem;color:var(--muted);margin-top:2px;}
+.tag{font-size:.62rem;font-weight:600;padding:2px 7px;border-radius:8px;display:inline-block;margin-top:2px;}
 .t-ok{background:var(--mint2);color:var(--dg);}
 .t-wl{background:rgba(123,94,167,.12);color:var(--purple);}
 .t-pres{background:#E8F5E9;color:#2E7D32;}
-.t-abs{background:var(--rbg);color:var(--red);}
-.t-sub{background:var(--obg);color:var(--orange);}
+.t-swu{background:var(--obg);color:var(--orange);}
+.t-mov{background:#F5F5F5;color:var(--muted);}
 
-/* ── Att toggle ── */
-.att{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--border);cursor:pointer;font-size:.95rem;transition:all .2s;background:#fff;user-select:none;}
+/* Swap selector (modal-like inline) */
+.swap-sel{background:#fff;border:2px solid var(--orange);border-radius:12px;padding:.9rem 1.1rem;margin-top:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);}
+.swap-sel-title{font-size:.82rem;font-weight:700;color:var(--orange);margin-bottom:.6rem;}
+.swap-option{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;border-radius:8px;cursor:pointer;transition:background .15s;}
+.swap-option:hover{background:var(--obg);}
+.swap-option-name{font-size:.84rem;font-weight:600;flex:1;}
+.swap-option-nick{font-size:.74rem;color:var(--muted);}
+.swap-cancel{margin-top:.5rem;font-size:.76rem;color:var(--muted);cursor:pointer;text-decoration:underline;}
+
+/* Att toggle */
+.att{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--border);cursor:pointer;font-size:.9rem;transition:all .2s;background:#fff;user-select:none;flex-shrink:0;}
 .att:hover{border-color:var(--mg);background:var(--mint);}
 .att.yes{background:var(--mg);border-color:var(--mg);color:#fff;}
-.att.no{background:var(--rbg);border-color:var(--red);color:var(--red);}
+.att.pending{background:#FFF3E0;border-color:var(--orange);color:var(--orange);}
 
-/* ── Swap box ── */
-.swap-box{background:var(--cream);border:1.5px solid #E5D87A;border-radius:12px;padding:.9rem 1.1rem;margin-top:.9rem;}
-.swap-title{font-size:.84rem;font-weight:700;color:#5C5000;margin-bottom:.55rem;}
-.swap-item{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;padding:.5rem .7rem;background:rgba(255,243,224,.7);border-radius:8px;flex-wrap:wrap;}
-.swap-item span{font-size:.82rem;flex:1;}
-.irow{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;}
-.inp{font-family:"Sarabun",sans-serif;font-size:.8rem;padding:.38rem .65rem;border:1.5px solid #E5D87A;border-radius:8px;background:#fff;color:var(--text);}
-.inp:focus{outline:none;border-color:var(--mg);}
-.inp.sm{max-width:100px;} .inp.md{max-width:130px;} .inp.lg{flex:1;}
-.btn{font-family:"Sarabun",sans-serif;font-size:.78rem;font-weight:600;padding:.38rem .85rem;border-radius:8px;border:none;cursor:pointer;transition:background .2s;}
-.btn-add{background:var(--mg);color:#fff;} .btn-add:hover{background:var(--dg);}
-.btn-del{background:var(--rbg);color:var(--red);}
-.btn-save{background:var(--dg);color:#fff;padding:.55rem 1.2rem;border-radius:9px;border:none;cursor:pointer;font-family:"Sarabun",sans-serif;font-size:.84rem;font-weight:600;margin-top:.75rem;}
-.btn-save:hover{background:#1E3F1B;}
+/* Summary box */
+.sum-box{background:#fff;border-radius:11px;padding:.9rem 1.1rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;}
+.sum-title{font-size:.82rem;font-weight:700;color:var(--dg);margin-bottom:.6rem;}
+.sum-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;font-size:.82rem;}
+.sum-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-/* ── Round2 box ── */
-.r2box{background:var(--cream);border:1.5px solid #E5D87A;border-radius:12px;padding:1rem 1.2rem;margin-top:1.1rem;display:flex;gap:.8rem;align-items:flex-start;}
-.r2icon{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
-.r2title{font-size:.86rem;font-weight:700;color:#5C5000;margin-bottom:3px;}
-.r2body{font-size:.79rem;color:#7B6F00;line-height:1.6;}
+/* R2 box */
+.r2box{background:var(--cream);border:1.5px solid #E5D87A;border-radius:11px;padding:.9rem 1.1rem;margin-top:1rem;display:flex;gap:.75rem;align-items:flex-start;}
+.r2icon{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
+.r2title{font-size:.84rem;font-weight:700;color:#5C5000;margin-bottom:3px;}
+.r2body{font-size:.78rem;color:#7B6F00;line-height:1.6;}
 
-/* ── Reg button ── */
-.reg-wrap{margin-top:1.2rem;}
-.reg-a{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--dg);color:#fff;text-decoration:none;border-radius:13px;padding:.9rem 1.4rem;font-size:.95rem;font-weight:600;box-shadow:0 3px 12px rgba(45,90,39,.22);}
-.reg-badge{background:rgba(255,255,255,.2);font-size:.7rem;padding:2px 9px;border-radius:20px;}
-.reg-url{text-align:center;font-size:.7rem;color:var(--muted);margin-top:6px;}
+/* Reg btn */
+.reg-wrap{margin-top:1.1rem;}
+.reg-a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--dg);color:#fff;text-decoration:none;border-radius:12px;padding:.85rem 1.3rem;font-size:.92rem;font-weight:600;box-shadow:0 3px 11px rgba(45,90,39,.2);}
+.reg-badge{background:rgba(255,255,255,.2);font-size:.68rem;padding:2px 8px;border-radius:20px;}
+.reg-url{text-align:center;font-size:.68rem;color:var(--muted);margin-top:5px;}
 
-/* ── Footer ── */
-.footer{text-align:center;font-size:.7rem;color:var(--muted);padding:1.2rem 2rem;border-top:1px solid var(--mint2);max-width:900px;margin:0 auto;}
+/* Footer */
+.footer{text-align:center;font-size:.68rem;color:var(--muted);padding:1.1rem 2rem;border-top:1px solid var(--mint2);max-width:900px;margin:0 auto;}
 .footer strong{color:var(--mg);}
 
-/* ── Toast ── */
-.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--dg);color:#fff;padding:.65rem 1.1rem;border-radius:9px;font-size:.8rem;font-weight:600;transform:translateY(70px);opacity:0;transition:all .3s;z-index:999;}
+/* Toast */
+.toast{position:fixed;bottom:1.3rem;right:1.3rem;background:var(--dg);color:#fff;padding:.6rem 1rem;border-radius:9px;font-size:.78rem;font-weight:600;transform:translateY(65px);opacity:0;transition:all .3s;z-index:999;}
 .toast.show{transform:translateY(0);opacity:1;}
 
-/* ── Skeleton ── */
-.skel{background:linear-gradient(90deg,var(--mint2) 25%,var(--mint) 50%,var(--mint2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:18px;margin:3px 0;}
+/* Skel */
+.skel{background:linear-gradient(90deg,var(--mint2) 25%,var(--mint) 50%,var(--mint2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:17px;margin:2px 0;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skel-card{background:#fff;border-radius:11px;padding:.75rem 1rem;box-shadow:0 1px 5px rgba(45,90,39,.05);border-left:4px solid var(--mint2);margin-bottom:.45rem;}
-
-/* ── HR note ── */
-.hr-note{background:var(--pbg);border:1.5px solid rgba(123,94,167,.25);border-radius:10px;padding:.7rem 1rem;margin-bottom:.9rem;font-size:.78rem;color:var(--purple);}
+.skel-card{background:#fff;border-radius:10px;padding:.7rem .95rem;box-shadow:0 1px 5px rgba(45,90,39,.05);border-left:4px solid var(--mint2);margin-bottom:.42rem;}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="hdr">
   <div class="hdr-inner">
     <div class="org">⚖️ Nitirat Law & Collection — HR</div>
     <h1>อบรม <span>Macro & VBA</span> — ระบบติดตาม</h1>
     <div class="hdr-meta">
-      <span class="chip">📅 รุ่น 1 — เสาร์ที่ 25 เม.ย. 2569</span>
-      <span class="chip">📅 รุ่น 2 — พฤหัสที่ 15 พ.ค. 2569</span>
+      <span class="chip">📅 รุ่น 1 · 25 เม.ย. 2569</span>
+      <span class="chip">📅 รุ่น 2 · 15 พ.ค. 2569</span>
       <span class="chip">📍 ห้องประชุม 1</span>
     </div>
     <div class="live-row">
       <div class="live-badge"><div class="dot" id="dot"></div><span id="liveStatus">กำลังโหลด...</span></div>
-      <button class="hdr-refresh" onclick="loadSheet()">🔄 Refresh</button>
+      <button class="hdr-btn" onclick="loadSheet()">🔄 Refresh</button>
     </div>
   </div>
 </div>
 
-<!-- Stats -->
 <div class="stats">
   <div class="stat"><div class="stat-n" id="sTotal">—</div><div class="stat-l">ลงทะเบียนทั้งหมด</div></div>
-  <div class="stat"><div class="stat-n">10</div><div class="stat-l">ที่นั่งรุ่น 1</div></div>
-  <div class="stat"><div class="stat-n" id="sPresent">—</div><div class="stat-l">เข้าร่วมจริง รุ่น 1</div></div>
+  <div class="stat"><div class="stat-n" id="sR1Att">—</div><div class="stat-l">เข้าร่วมจริง รุ่น 1</div></div>
+  <div class="stat"><div class="stat-n" id="sSwaps">—</div><div class="stat-l">สลับตัว</div></div>
   <div class="stat"><div class="stat-n" id="sR2">—</div><div class="stat-l">รอรุ่น 2</div></div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs-wrap">
-  <button class="tab on"      onclick="go('r1')">✅ รุ่น 1</button>
-  <button class="tab"         onclick="go('r2')">🕐 รุ่น 2</button>
-  <button class="tab"         onclick="go('all')">📋 ทั้งหมด</button>
-  <button class="tab hr-tab"  onclick="go('att')">📝 เช็คชื่อ (HR)</button>
+  <button class="tab on"  onclick="go('r1')">✅ รุ่น 1</button>
+  <button class="tab"     onclick="go('r2')">🕐 รุ่น 2</button>
+  <button class="tab"     onclick="go('all')">📋 ทั้งหมด</button>
+  <button class="tab hr"  onclick="go('att')">📝 เช็คชื่อ (HR)</button>
 </div>
 
 <div class="main">
 
   <!-- ══ รุ่น 1 ══ -->
   <div class="panel on" id="p-r1">
-    <div class="round-card">
-      <div><div class="rdate">📅 วันเสาร์ที่ 25 เมษายน 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 👩‍💼 วิทยากร: ทีม HR นิติรัฐ</div></div>
+    <div class="rcard">
+      <div><div class="rdate">📅 วันเสาร์ที่ 25 เมษายน 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 👩‍💼 ทีม HR นิติรัฐ</div></div>
     </div>
     <div class="cap-card">
-      <div><div class="cap-n" id="capN">10</div><div class="cap-lbl">ที่นั่ง</div></div>
-      <div class="cap-bar-wrap">
+      <div><div class="cap-n">10</div><div class="cap-sub">ที่นั่ง</div></div>
+      <div class="cap-bw">
         <div class="cap-row"><span>ผู้ได้สิทธิ์ รุ่น 1</span><span id="capLbl">10 / 10 คน</span></div>
         <div class="cap-bar"><div class="cap-fill" id="capFill" style="width:100%"></div></div>
         <div class="cap-st" id="capSt">✅ รุ่น 1 เต็มแล้ว — รุ่น 2 เปิดรับอยู่</div>
       </div>
     </div>
-    <div class="sec-head"><span class="sbadge sb-g">✅ ผู้ได้รับสิทธิ์ รุ่น 1</span><span class="scnt" id="r1cnt">10 คน</span></div>
+    <div class="sh"><span class="sbadge sb-g">✅ ผู้ได้รับสิทธิ์ รุ่น 1</span><span class="scnt" id="r1cnt">10 คน</span></div>
     <div class="cards" id="r1list"><div class="skel-card"><div class="skel" style="width:75%"></div></div></div>
     <div class="reg-wrap">
       <a href="https://forms.gle/3utEAcFEz9Z4KyWk6" target="_blank" class="reg-a">
@@ -219,311 +214,388 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
 
   <!-- ══ รุ่น 2 ══ -->
   <div class="panel" id="p-r2">
-    <div class="round-card r2">
-      <div><div class="rdate" style="color:var(--purple)">📅 วันพฤหัสบดีที่ 15 พฤษภาคม 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 📍 ห้องประชุม 1</div></div>
+    <div class="rcard p">
+      <div><div class="rdate">📅 วันพฤหัสบดีที่ 15 พฤษภาคม 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 📍 ห้องประชุม 1</div></div>
     </div>
-    <div class="sec-head"><span class="sbadge sb-p">🕐 รอรุ่น 2</span><span class="scnt" id="r2cnt">—</span></div>
+    <div class="sh"><span class="sbadge sb-p">🕐 รายชื่อรุ่น 2</span><span class="scnt" id="r2cnt">—</span></div>
     <div class="cards" id="r2list"><div class="skel-card"><div class="skel" style="width:70%"></div></div></div>
-    <div class="r2box" style="margin-top:1rem;">
+    <div class="r2box" style="margin-top:.9rem;">
       <div class="r2icon">📋</div>
-      <div><div class="r2title">รุ่นที่ 2 — 15 พฤษภาคม 2569</div>
-      <div class="r2body">รุ่น 1 เต็มแล้ว แต่ยังลงทะเบียนได้ต่อเนื่องค่ะ<br>ผู้ที่ลงหลังอันดับ 10 จะได้รุ่น 2 ตามลำดับ ทีม HR จะยืนยันก่อนวันอบรมค่ะ</div></div>
-    </div>
-    <div class="reg-wrap">
-      <a href="https://forms.gle/3utEAcFEz9Z4KyWk6" target="_blank" class="reg-a">
-        <span>📝</span><span>ลงทะเบียนรุ่น 2</span>
-      </a>
+      <div><div class="r2title">หมายเหตุรุ่น 2</div>
+      <div class="r2body">รายชื่อจะอัปเดตอัตโนมัติเมื่อมีการสลับตัวจากรุ่น 1<br>ผู้ที่สลับลงมาจากรุ่น 1 จะอยู่ต้นคิวรุ่น 2 โดยอัตโนมัติค่ะ</div></div>
     </div>
   </div>
 
   <!-- ══ ทั้งหมด ══ -->
   <div class="panel" id="p-all">
-    <div class="sec-head"><span class="sbadge sb-g">📋 ผู้ลงทะเบียนทั้งหมด</span><span class="scnt" id="allCnt">—</span></div>
+    <div class="sh"><span class="sbadge sb-g">📋 รายชื่อทั้งหมด</span><span class="scnt" id="allCnt">—</span></div>
     <div class="cards" id="allList"><div class="skel-card"><div class="skel" style="width:80%"></div></div></div>
   </div>
 
-  <!-- ══ เช็คชื่อ (HR) ══ -->
+  <!-- ══ เช็คชื่อ HR ══ -->
   <div class="panel" id="p-att">
-    <div class="hr-note">🔒 ส่วนนี้สำหรับ HR เท่านั้น — ข้อมูลบันทึกใน browser นี้</div>
 
-    <!-- Att progress -->
-    <div class="cap-card">
-      <div><div class="cap-n" id="attN">0</div><div class="cap-lbl">เข้าร่วม</div></div>
-      <div class="cap-bar-wrap">
-        <div class="cap-row"><span>เช็คชื่อเข้าร่วมจริง รุ่น 1</span><span id="attLbl">0 / 10</span></div>
-        <div class="cap-bar"><div class="cap-fill" id="attFill" style="width:0%"></div></div>
-        <div class="cap-st" id="attSt" style="color:var(--muted)">กดวงกลมข้างชื่อเพื่อเช็ค ✓</div>
-      </div>
+    <!-- Summary -->
+    <div class="sum-box" id="sumBox" style="display:none">
+      <div class="sum-title">📊 สรุปการเข้าร่วมจริง รุ่น 1</div>
+      <div id="sumRows"></div>
     </div>
 
-    <div class="sec-head"><span class="sbadge sb-g">เช็คชื่อ รุ่น 1</span></div>
-    <div class="cards" id="attList"><div class="skel-card"><div class="skel" style="width:75%"></div></div></div>
+    <div class="sh"><span class="sbadge sb-g">เช็คชื่อ รุ่น 1</span>
+      <span style="font-size:.72rem;color:var(--muted)">คลิก ✓ = มา &nbsp;·&nbsp; ถ้าไม่มาเลือกคนจากรุ่น 2 แทน</span>
+    </div>
+    <div id="attList"><div class="skel-card"><div class="skel" style="width:75%"></div></div></div>
+    <div id="swapSelector" style="display:none"></div>
 
-    <!-- Swap section -->
-    <div class="swap-box">
-      <div class="swap-title">🔄 บันทึกการสลับตัว / Walk-in</div>
-      <div id="swapItems"></div>
-      <div class="irow">
-        <input class="inp lg" id="sName" placeholder="ชื่อ-นามสกุล" />
-        <input class="inp md" id="sNick" placeholder="ชื่อเล่น" />
-        <input class="inp sm" id="sId"   placeholder="รหัส" />
-        <input class="inp lg" id="sNote" placeholder="หมายเหตุ เช่น สลับกับ..." />
-        <button class="btn btn-add" onclick="addSwap()">+ เพิ่ม</button>
-      </div>
-      <button class="btn-save" onclick="saveAll()">💾 บันทึกทั้งหมด</button>
+    <div style="display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap;">
+      <button onclick="saveAll()" style="padding:.55rem 1.2rem;border-radius:9px;border:none;cursor:pointer;background:var(--dg);color:#fff;font-family:'Sarabun',sans-serif;font-size:.84rem;font-weight:600;">💾 บันทึก</button>
+      <button onclick="resetAtt()" style="padding:.55rem 1.2rem;border-radius:9px;border:none;cursor:pointer;background:var(--rbg);color:var(--red);font-family:'Sarabun',sans-serif;font-size:.82rem;font-weight:600;">🔄 Reset</button>
     </div>
   </div>
 
-</div><!-- /main -->
+</div>
 
 <div class="footer"><span id="footerTs">—</span> &nbsp;·&nbsp; จัดโดย <strong>ฝ่าย HR นิติรัฐ Law & Collection</strong></div>
-<div class="toast" id="toast">บันทึกแล้ว ✓</div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ── Config ────────────────────────────────────────────────────────
 const SHEET_ID = "1ecMncRWKY0TnKUs8gooGWktRQBcXaKZtP834YebgfBg";
 const R1_MAX   = 10;
 
-// ── Fallback ──────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────
+let allData = [];
+// att: { [id]: "yes" | "swapped" }  — "swapped" = ไม่มา สลับกับคนจาก R2
+// swapMap: { [r1_id]: { with: r2_person_object } }
+let att     = JSON.parse(localStorage.getItem("att2_r1")  || "{}");
+let swapMap = JSON.parse(localStorage.getItem("swap2_r1") || "{}");
+
+// ── Fetch ──────────────────────────────────────────────────────────
+function fmtTime(ts){
+  try{
+    const m = ts.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
+    if(!m) return ts;
+    const mo=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    return `${m[2]} ${mo[+m[1]]} ${m[4]}:${m[5]}`;
+  }catch(e){return ts;}
+}
+
 const FALLBACK = [
-  {name:"ไลลา หล้ะหมูด",         nick:"ไลลา",  id:"3110", time:"18 เม.ย. 15:22"},
-  {name:"ภัทราวดี เหม่นครบุรี",   nick:"เนส",   id:"0480", time:"18 เม.ย. 15:28"},
-  {name:"กนกวรรณ ราตรี",          nick:"มุ้ย",  id:"2214", time:"18 เม.ย. 15:47"},
-  {name:"พรชัย พรหมเกตุจันทร์",   nick:"กอล์ฟ",id:"1094", time:"18 เม.ย. 15:54"},
-  {name:"พีระชาติ คมกริส",        nick:"ไอซ์", id:"0886", time:"18 เม.ย. 15:56"},
-  {name:"สุรสีห์ ทองใหม่",        nick:"อาม",  id:"0357", time:"18 เม.ย. 17:49"},
-  {name:"ปวรรุฒิ บุญสุข",         nick:"กอฟ",  id:"2192", time:"18 เม.ย. 19:43"},
-  {name:"ศิรินทร์ พุ่มไม้ใหญ่",   nick:"ต้อง", id:"0394", time:"18 เม.ย. 20:21"},
-  {name:"ดวงมณี ทองใหม่",         nick:"อ้อม", id:"0090", time:"18 เม.ย. 21:37"},
-  {name:"วราพร ศรีเจริญ",         nick:"น้ำ",  id:"0074", time:"19 เม.ย. 09:08"},
-  {name:"ฉวีวรรณ วงศ์วรชาติ",     nick:"แจง",  id:"0079", time:"20 เม.ย. 08:59"},
-  {name:"อภิญญา ศรีตะโชติ",       nick:"แอน",  id:"0991", time:"20 เม.ย. 13:23"},
-  {name:"พงษ์ศักดิ์ หงษ์วิบูลย์ศรี",nick:"เอส",id:"0153", time:"20 เม.ย. 13:25"},
+  {name:"ไลลา หล้ะหมูด",            nick:"ไลลา",  id:"3110",time:"18 เม.ย. 15:22"},
+  {name:"ภัทราวดี เหม่นครบุรี",      nick:"เนส",   id:"0480",time:"18 เม.ย. 15:28"},
+  {name:"กนกวรรณ ราตรี",             nick:"มุ้ย",  id:"2214",time:"18 เม.ย. 15:47"},
+  {name:"พรชัย พรหมเกตุจันทร์",      nick:"กอล์ฟ",id:"1094",time:"18 เม.ย. 15:54"},
+  {name:"พีระชาติ คมกริส",           nick:"ไอซ์", id:"0886",time:"18 เม.ย. 15:56"},
+  {name:"สุรสีห์ ทองใหม่",           nick:"อาม",  id:"0357",time:"18 เม.ย. 17:49"},
+  {name:"ปวรรุฒิ บุญสุข",            nick:"กอฟ",  id:"2192",time:"18 เม.ย. 19:43"},
+  {name:"ศิรินทร์ พุ่มไม้ใหญ่",      nick:"ต้อง", id:"0394",time:"18 เม.ย. 20:21"},
+  {name:"ดวงมณี ทองใหม่",            nick:"อ้อม", id:"0090",time:"18 เม.ย. 21:37"},
+  {name:"วราพร ศรีเจริญ",            nick:"น้ำ",  id:"0074",time:"19 เม.ย. 09:08"},
+  {name:"ฉวีวรรณ วงศ์วรชาติ",        nick:"แจง",  id:"0079",time:"20 เม.ย. 08:59"},
+  {name:"อภิญญา ศรีตะโชติ",          nick:"แอน",  id:"0991",time:"20 เม.ย. 13:23"},
+  {name:"พงษ์ศักดิ์ หงษ์วิบูลย์ศรี",nick:"เอส",  id:"0153",time:"20 เม.ย. 13:25"},
 ];
 
-// ── State ─────────────────────────────────────────────────────────
-let allData = [];
-let att   = JSON.parse(localStorage.getItem("att_r1")   || "{}");
-let swaps = JSON.parse(localStorage.getItem("swaps_r1") || "[]");
-
-// ── Sheet fetch ───────────────────────────────────────────────────
-function fmtTime(ts) {
-  try {
-    const m = ts.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
-    if (!m) return ts;
-    const mo = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-    return `${m[2]} ${mo[+m[1]]} ${m[4]}:${m[5]}`;
-  } catch(e){ return ts; }
-}
-
-async function loadSheet() {
+async function loadSheet(){
   setStatus("loading");
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&t=${Date.now()}`;
-  try {
-    const res  = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.substring(47).slice(0, -2));
-    const seen = new Set();
-    allData = json.table.rows
-      .map(r => ({
-        name: (r.c[2]?.v || "").trim(),
-        nick: (r.c[3]?.v || "").trim(),
-        id:   String(r.c[1]?.v || "").padStart(4,"0"),
-        time: fmtTime(r.c[0]?.v || ""),
-      }))
-      .filter(r => r.name && !seen.has(r.id) && seen.add(r.id));
-    setStatus("ok", `ข้อมูลสด · ${allData.length} รายการ · ${new Date().toLocaleTimeString("th-TH")}`);
-    render();
-  } catch(e) {
-    allData = FALLBACK.map(r => ({...r}));
-    setStatus("err", "ใช้ข้อมูลสำรอง — ตั้ง Sheet เป็น Public แล้ว Refresh");
-    render();
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&t=${Date.now()}`;
+  try{
+    const res=await fetch(url);
+    const text=await res.text();
+    const json=JSON.parse(text.substring(47).slice(0,-2));
+    const seen=new Set();
+    allData=json.table.rows
+      .map(r=>({name:(r.c[2]?.v||"").trim(),nick:(r.c[3]?.v||"").trim(),
+                id:String(r.c[1]?.v||"").padStart(4,"0"),time:fmtTime(r.c[0]?.v||"")}))
+      .filter(r=>r.name&&!seen.has(r.id)&&seen.add(r.id));
+    setStatus("ok",`ข้อมูลสด · ${allData.length} รายการ · ${new Date().toLocaleTimeString("th-TH")}`);
+  }catch(e){
+    allData=FALLBACK.map(r=>({...r}));
+    setStatus("err","ใช้ข้อมูลสำรอง — ตั้ง Sheet เป็น Public แล้ว Refresh");
   }
+  render();
 }
 
-function setStatus(s, msg) {
-  const dot = document.getElementById("dot");
-  const txt = document.getElementById("liveStatus");
-  dot.className = s === "err" ? "dot err" : "dot";
-  txt.textContent = msg || (s === "loading" ? "กำลังโหลด..." : "");
+function setStatus(s,msg){
+  document.getElementById("dot").className = s==="err"?"dot err":"dot";
+  document.getElementById("liveStatus").textContent = msg||(s==="loading"?"กำลังโหลด...":"");
 }
 
-// ── Render ────────────────────────────────────────────────────────
-function render() {
+// ── Computed lists ─────────────────────────────────────────────────
+// r1_effective = R1 people who came + R2 swap-ups
+// r2_effective = R2 original (minus swap-ups) + R1 no-shows (moved down)
+function getEffective(){
+  const r1Orig = allData.slice(0, R1_MAX);
+  const r2Orig = allData.slice(R1_MAX);
+
+  // Swap-ups = R2 people who replaced R1 no-shows
+  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
+
+  const r1Eff = [];
+  const movedDown = []; // R1 no-shows (moved to R2)
+
+  r1Orig.forEach(p => {
+    if (att[p.id] === "swapped") {
+      movedDown.push({...p, movedFrom:"r1"});
+    } else {
+      r1Eff.push({...p, attStatus: att[p.id] || "pending"});
+    }
+  });
+
+  // Add swap-ups from R2
+  Object.entries(swapMap).forEach(([r1Id, r2Person]) => {
+    r1Eff.push({...r2Person, attStatus:"swapped-up", swappedFor: r1Id});
+  });
+
+  const r2Eff = [
+    ...movedDown,
+    ...r2Orig.filter(p => !swapUpIds.has(p.id))
+  ];
+
+  return {r1Eff, r2Eff, movedDown, swapUpIds};
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function render(){
   const r1 = allData.slice(0, R1_MAX);
   const r2 = allData.slice(R1_MAX);
+  const {r1Eff, r2Eff} = getEffective();
 
-  // Stats
-  document.getElementById("sTotal").textContent = allData.length;
-  document.getElementById("sR2").textContent    = r2.length || "—";
-  updateAttStats();
+  const totalAtt = r1Eff.filter(p => p.attStatus === "yes" || p.attStatus === "swapped-up").length;
+  const numSwaps = Object.keys(swapMap).length;
 
-  // Cap bar
-  const pct = Math.min(100, Math.round(r1.length / R1_MAX * 100));
-  document.getElementById("capFill").style.width = pct + "%";
+  document.getElementById("sTotal").textContent  = allData.length;
+  document.getElementById("sR1Att").textContent  = totalAtt || "—";
+  document.getElementById("sSwaps").textContent  = numSwaps || "—";
+  document.getElementById("sR2").textContent     = r2Eff.length || "—";
   document.getElementById("capLbl").textContent  = `${r1.length} / ${R1_MAX} คน`;
   document.getElementById("r1cnt").textContent   = `${r1.length} คน`;
-  document.getElementById("r2cnt").textContent   = r2.length ? `${r2.length} คน` : "—";
+  document.getElementById("r2cnt").textContent   = r2Eff.length ? `${r2Eff.length} คน` : "—";
   document.getElementById("allCnt").textContent  = `${allData.length} คน`;
-  document.getElementById("capSt").textContent   =
-    r1.length >= R1_MAX ? "✅ รุ่น 1 เต็มแล้ว — รุ่น 2 เปิดรับอยู่"
-                        : `🟡 รุ่น 1 ยังรับได้อีก ${R1_MAX - r1.length} ที่นั่ง`;
 
-  // Timestamp
   const now = new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
   document.getElementById("footerTs").textContent = "อัปเดตล่าสุด: " + now;
 
-  // Render lists
-  renderR1(r1);
-  renderR2(r2);
-  renderAll();
-  renderAtt(r1);
-  renderSwapItems();
+  renderR1pub(r1);
+  renderR2pub(r2Eff);
+  renderAllTab();
+  renderAttTab(r1);
 }
 
-function card(p, rank, cls, tag, delay) {
-  const av = p.name.charAt(0);
+function mkCard(p, rank, cls, tagHtml, delay=0){
   return `<div class="card ${cls}" style="animation-delay:${delay}s">
     <div class="rank">${rank}</div>
-    <div class="ava">${av}</div>
+    <div class="ava">${p.name.charAt(0)}</div>
     <div class="ci"><div class="cn">${p.name}</div><div class="ck">ชื่อเล่น: ${p.nick}</div></div>
-    <div class="cr">
-      <div class="cid">${p.id}</div>
-      <div class="ct">${p.time}</div>
-      ${tag}
-    </div>
+    <div class="cr"><div class="cid">${p.id}</div><div class="ct">${p.time||""}</div>${tagHtml}</div>
   </div>`;
 }
 
-function renderR1(data) {
-  document.getElementById("r1list").innerHTML = data.length
-    ? data.map((p,i) => card(p, i+1, "r1", `<div class="tag t-ok">ยืนยันสิทธิ์</div>`, i*0.05)).join("")
-    : `<div style="text-align:center;padding:2rem;color:var(--muted);">ไม่มีข้อมูล</div>`;
+function renderR1pub(data){
+  document.getElementById("r1list").innerHTML =
+    data.map((p,i) => mkCard(p, i+1, "r1", `<div class="tag t-ok">ยืนยันสิทธิ์</div>`, i*.05)).join("");
 }
 
-function renderR2(data) {
-  document.getElementById("r2list").innerHTML = data.length
-    ? data.map((p,i) => card(p, `#${i+1}`, "r2c", `<div class="tag t-wl">รอรุ่น 2</div>`, i*0.05)).join("")
-    : `<div style="text-align:center;padding:2rem;color:var(--muted)">ยังไม่มีรายชื่อรุ่น 2</div>`;
+function renderR2pub(data){
+  const el = document.getElementById("r2list");
+  if(!data.length){
+    el.innerHTML=`<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem">ยังไม่มีรายชื่อ</div>`;
+    return;
+  }
+  el.innerHTML = data.map((p,i) => {
+    const cls = p.movedFrom === "r1" ? "r2c" : "r2c";
+    const tag = p.movedFrom === "r1"
+      ? `<div class="tag t-mov">ย้ายจากรุ่น 1</div>`
+      : `<div class="tag t-wl">รอรุ่น 2</div>`;
+    return mkCard(p, `#${i+1}`, cls, tag, i*.05);
+  }).join("");
 }
 
-function renderAll() {
-  const el = document.getElementById("allList");
-  el.innerHTML = allData.map((p,i) => {
-    const isR1 = i < R1_MAX;
-    const cls  = isR1 ? "r1" : "r2c";
-    const tag  = isR1 ? `<div class="tag t-ok">รุ่น 1</div>` : `<div class="tag t-wl">รุ่น 2</div>`;
-    return card(p, i+1, cls, tag, i*0.04);
-  }).join("") || `<div style="text-align:center;padding:2rem;color:var(--muted)">ไม่มีข้อมูล</div>`;
+function renderAllTab(){
+  document.getElementById("allList").innerHTML =
+    allData.map((p,i) => {
+      const isR1 = i < R1_MAX;
+      return mkCard(p, i+1, isR1?"r1":"r2c",
+        isR1 ? `<div class="tag t-ok">รุ่น 1</div>` : `<div class="tag t-wl">รุ่น 2</div>`,
+        i*.04);
+    }).join("");
 }
 
-function renderAtt(r1) {
-  const el = document.getElementById("attList");
-  el.innerHTML = r1.map((p, i) => {
+// ── Att tab ────────────────────────────────────────────────────────
+let pendingSwapFor = null; // r1_id we are picking a swap for
+
+function renderAttTab(r1){
+  const {movedDown, swapUpIds} = getEffective();
+  const movedIds = new Set(movedDown.map(p=>p.id));
+
+  let html = "";
+  r1.forEach((p,i) => {
     const st = att[p.id];
-    const rowCls = st === "yes" ? "r1 present" : st === "no" ? "r1 absent" : "r1";
-    const togCls = st === "yes" ? "yes" : st === "no" ? "no" : "";
-    const togIcon = st === "yes" ? "✓" : st === "no" ? "✗" : "";
-    const tag = st === "yes" ? `<div class="tag t-pres">เข้าร่วม</div>`
-               : st === "no" ? `<div class="tag t-abs">ไม่มา</div>`
-               : "";
-    return `<div class="card ${rowCls}" style="animation-delay:${i*0.05}s">
+    const swap = swapMap[p.id];
+    let rowCls = "r1";
+    let togCls = "";
+    let togTxt = "";
+    let extra  = "";
+
+    if(st === "yes"){
+      rowCls = "r1"; togCls = "yes"; togTxt = "✓";
+      extra = `<div class="tag t-pres">เข้าร่วม ✓</div>`;
+    } else if(st === "swapped"){
+      rowCls = "moved-down"; togCls = "pending"; togTxt = "→";
+      const sub = swap ? `สลับกับ ${swap.name} (${swap.nick})` : "เลือกผู้แทน...";
+      extra = `<div class="tag" style="background:var(--obg);color:var(--orange)">ไม่มา · ${sub}</div>`;
+    } else {
+      togTxt = "";
+    }
+
+    html += `<div class="card ${rowCls}" id="card-${p.id}" style="animation-delay:${i*.05}s">
       <div class="rank">${i+1}</div>
       <div class="ava">${p.name.charAt(0)}</div>
       <div class="ci"><div class="cn">${p.name}</div><div class="ck">ชื่อเล่น: ${p.nick}</div></div>
-      <div class="cr" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-        <div class="cid">${p.id}</div>
-        ${tag}
-      </div>
-      <div class="att ${togCls}" onclick="toggleAtt('${p.id}')" title="คลิกเช็คชื่อ">${togIcon}</div>
+      <div class="cr"><div class="cid">${p.id}</div>${extra}</div>
+      <div class="att ${togCls}" onclick="cycleAtt('${p.id}')" title="คลิก: มา / ไม่มา+สลับ / ยกเลิก">${togTxt}</div>
     </div>`;
-  }).join("");
+  });
 
-  // Swap cards in att view
-  if (swaps.length) {
-    el.innerHTML += swaps.map(s => `
-      <div class="card r1" style="border-left-color:var(--orange)!important;background:var(--obg)!important">
-        <div class="rank">+</div>
-        <div class="ava" style="background:linear-gradient(135deg,var(--orange),#FF8A65)">${s.name.charAt(0)}</div>
-        <div class="ci"><div class="cn">${s.name}</div><div class="ck">${s.nick}${s.note ? " · " + s.note : ""}</div></div>
-        <div class="cr"><div class="cid">${s.id || "—"}</div><div class="tag t-sub">Walk-in</div></div>
-      </div>`).join("");
+  // Show swap-ups at bottom
+  if(Object.keys(swapMap).length){
+    html += `<div style="margin:.6rem 0 .3rem;font-size:.74rem;font-weight:600;color:var(--orange)">🔄 ขยับขึ้นจากรุ่น 2</div>`;
+    Object.entries(swapMap).forEach(([r1Id, r2p]) => {
+      html += `<div class="card swapped-up">
+        <div class="rank">↑</div>
+        <div class="ava">${r2p.name.charAt(0)}</div>
+        <div class="ci"><div class="cn">${r2p.name}</div><div class="ck">${r2p.nick} · แทน ${getR1Name(r1Id)}</div></div>
+        <div class="cr"><div class="cid">${r2p.id}</div><div class="tag t-swu">เข้าแทน</div></div>
+      </div>`;
+    });
   }
-  updateAttStats();
+
+  document.getElementById("attList").innerHTML = html;
+  renderSummary(r1);
 }
 
-function updateAttStats() {
-  const present = Object.values(att).filter(v => v === "yes").length + swaps.length;
-  const pct     = Math.round(present / R1_MAX * 100);
-  document.getElementById("attN").textContent     = present;
-  document.getElementById("attLbl").textContent   = `${present} / ${R1_MAX}`;
-  document.getElementById("attFill").style.width  = pct + "%";
-  document.getElementById("attSt").textContent    = present > 0 ? `เข้าร่วมจริง ${present} คน (${pct}%)` : "กดวงกลมข้างชื่อเพื่อเช็ค ✓";
-  document.getElementById("sPresent").textContent = present || "—";
+function getR1Name(id){
+  const p = allData.slice(0,R1_MAX).find(x=>x.id===id);
+  return p ? p.nick || p.name : id;
 }
 
-// ── Att toggle ────────────────────────────────────────────────────
-function toggleAtt(id) {
+function renderSummary(r1){
+  const {r1Eff, r2Eff} = getEffective();
+  const present   = r1.filter(p => att[p.id] === "yes").length;
+  const swapped   = Object.keys(swapMap).length;
+  const missing   = r1.filter(p => att[p.id] === "swapped" && !swapMap[p.id]).length;
+  const notMarked = r1.filter(p => !att[p.id]).length;
+  const total = present + swapped;
+
+  if(total === 0 && notMarked === r1.length){
+    document.getElementById("sumBox").style.display = "none";
+    return;
+  }
+  document.getElementById("sumBox").style.display = "block";
+  document.getElementById("sumRows").innerHTML = `
+    <div class="sum-row"><div class="sum-dot" style="background:var(--mg)"></div><span>เข้าร่วม: <strong>${present} คน</strong></span></div>
+    ${swapped ? `<div class="sum-row"><div class="sum-dot" style="background:var(--orange)"></div><span>สลับตัว (เข้าแทน): <strong>${swapped} คู่</strong></span></div>` : ""}
+    ${missing ? `<div class="sum-row"><div class="sum-dot" style="background:var(--red)"></div><span>ไม่มา ยังไม่เลือกผู้แทน: <strong>${missing} คน</strong></span></div>` : ""}
+    ${notMarked ? `<div class="sum-row"><div class="sum-dot" style="background:var(--muted)"></div><span>ยังไม่เช็ค: <strong>${notMarked} คน</strong></span></div>` : ""}
+    <div class="sum-row" style="margin-top:.3rem;border-top:1px solid var(--border);padding-top:.3rem">
+      <div class="sum-dot" style="background:var(--dg)"></div>
+      <span>เข้าร่วมจริงรุ่น 1: <strong>${total} / 10 คน</strong></span>
+    </div>`;
+  document.getElementById("sR1Att").textContent = total || "—";
+  document.getElementById("sSwaps").textContent = swapped || "—";
+}
+
+// ── Att cycle: blank → yes → swapped+picker → blank ───────────────
+function cycleAtt(id){
   const cur = att[id];
-  if (!cur)        att[id] = "yes";
-  else if (cur==="yes") att[id] = "no";
-  else             delete att[id];
-  localStorage.setItem("att_r1", JSON.stringify(att));
-  renderAtt(allData.slice(0, R1_MAX));
+  if(!cur){
+    att[id] = "yes";
+    delete swapMap[id];
+    save(); renderAttTab(allData.slice(0,R1_MAX));
+  } else if(cur === "yes"){
+    att[id] = "swapped";
+    save(); renderAttTab(allData.slice(0,R1_MAX));
+    showSwapPicker(id);
+  } else {
+    delete att[id];
+    delete swapMap[id];
+    save(); renderAttTab(allData.slice(0,R1_MAX));
+    hideSwapPicker();
+  }
 }
 
-// ── Swap ──────────────────────────────────────────────────────────
-function renderSwapItems() {
-  const el = document.getElementById("swapItems");
-  el.innerHTML = swaps.map((s, i) => `
-    <div class="swap-item">
-      <span><strong>${s.name}</strong> (${s.nick}) — ${s.id || "ไม่มีรหัส"}${s.note ? " · " + s.note : ""}</span>
-      <button class="btn btn-del" onclick="delSwap(${i})">ลบ</button>
-    </div>`).join("");
+// ── Swap picker ────────────────────────────────────────────────────
+function showSwapPicker(r1Id){
+  pendingSwapFor = r1Id;
+  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
+  const r2 = allData.slice(R1_MAX).filter(p => !swapUpIds.has(p.id) || swapMap[r1Id]?.id === p.id);
+
+  const opts = r2.map(p => `
+    <div class="swap-option" onclick="confirmSwap('${r1Id}','${p.id}')">
+      <div class="ava" style="background:linear-gradient(135deg,var(--purple),#9B7EC8);width:28px;height:28px;font-size:.76rem">${p.name.charAt(0)}</div>
+      <div>
+        <div class="swap-option-name">${p.name}</div>
+        <div class="swap-option-nick">${p.nick} · #${allData.indexOf(p)+1-R1_MAX+1} ในคิว</div>
+      </div>
+    </div>`).join("") || `<div style="color:var(--muted);font-size:.8rem;padding:.5rem">ไม่มีรายชื่อในรุ่น 2 แล้ว</div>`;
+
+  const r1Name = getR1Name(r1Id);
+  const el = document.getElementById("swapSelector");
+  el.style.display = "block";
+  el.innerHTML = `<div class="swap-sel">
+    <div class="swap-sel-title">เลือกผู้เข้าแทน ${r1Name} จากรุ่น 2</div>
+    ${opts}
+    <div class="swap-cancel" onclick="cancelSwap('${r1Id}')">✕ ยกเลิก (ไม่สลับ)</div>
+  </div>`;
+
+  el.scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-function addSwap() {
-  const name = document.getElementById("sName").value.trim();
-  if (!name) { toast("กรุณาใส่ชื่อ"); return; }
-  swaps.push({
-    name, nick: document.getElementById("sNick").value.trim(),
-    id: document.getElementById("sId").value.trim(),
-    note: document.getElementById("sNote").value.trim(),
-  });
-  ["sName","sNick","sId","sNote"].forEach(f => document.getElementById(f).value = "");
-  renderSwapItems();
-  renderAtt(allData.slice(0, R1_MAX));
+function hideSwapPicker(){
+  document.getElementById("swapSelector").style.display = "none";
+  pendingSwapFor = null;
 }
 
-function delSwap(i) {
-  swaps.splice(i, 1);
-  renderSwapItems();
-  renderAtt(allData.slice(0, R1_MAX));
+function confirmSwap(r1Id, r2Id){
+  const r2Person = allData.find(p => p.id === r2Id);
+  if(!r2Person) return;
+  swapMap[r1Id] = {...r2Person};
+  save(); hideSwapPicker(); renderAttTab(allData.slice(0,R1_MAX)); render();
+  toast(`✓ ${getR1Name(r1Id)} ← สลับกับ ${r2Person.nick}`);
 }
 
-function saveAll() {
-  localStorage.setItem("att_r1",   JSON.stringify(att));
-  localStorage.setItem("swaps_r1", JSON.stringify(swaps));
-  toast("บันทึกแล้ว ✓");
+function cancelSwap(r1Id){
+  // ยกเลิกการสลับ แต่ยังคง "swapped" (ไม่มา ไม่มีผู้แทน)
+  delete swapMap[r1Id];
+  save(); hideSwapPicker(); renderAttTab(allData.slice(0,R1_MAX));
 }
 
-// ── Tab switch ────────────────────────────────────────────────────
-function go(id) {
-  document.querySelectorAll(".tab").forEach((t, i) => {
-    t.classList.toggle("on", ["r1","r2","all","att"][i] === id);
-  });
+function saveAll(){ save(); toast("บันทึกแล้ว ✓"); }
+
+function save(){
+  localStorage.setItem("att2_r1",  JSON.stringify(att));
+  localStorage.setItem("swap2_r1", JSON.stringify(swapMap));
+}
+
+function resetAtt(){
+  if(!confirm("Reset การเช็คชื่อทั้งหมดไหมคะ?")) return;
+  att={}; swapMap={};
+  localStorage.removeItem("att2_r1"); localStorage.removeItem("swap2_r1");
+  hideSwapPicker(); render(); toast("Reset แล้ว");
+}
+
+function go(id){
+  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("on",["r1","r2","all","att"][i]===id));
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
-  document.getElementById("p-" + id).classList.add("on");
+  document.getElementById("p-"+id).classList.add("on");
+  hideSwapPicker();
 }
 
-// ── Toast ─────────────────────────────────────────────────────────
-function toast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2000);
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2200);
 }
 
-// ── Init ──────────────────────────────────────────────────────────
 loadSheet();
 </script>
 </body>
