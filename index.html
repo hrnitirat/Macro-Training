@@ -226,6 +226,11 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
 const SHEET_ID   = "1ecMncRWKY0TnKUs8gooGWktRQBcXaKZtP834YebgfBg";
 const ROUND_SIZE = 10;
 
+// ── API Config ───────────────────────────────────────────────────────
+// 👇 วาง URL จาก Apps Script Deploy ตรงนี้
+const API_URL = localStorage.getItem("apiUrl") || "";  // บันทึกได้ในหน้า ⚙️ ตั้งค่า
+const USE_API = API_URL !== "";  // true = ใช้ Sheets API, false = ใช้ localStorage
+
 // ── State ────────────────────────────────────────────────────────────
 let allData = [];
 let att     = JSON.parse(localStorage.getItem("att3_r1")   || "{}");
@@ -238,6 +243,44 @@ let roundDates = JSON.parse(localStorage.getItem("roundDates") || JSON.stringify
 }));
 let pendingSwapFor = null;
 let activeTab = "r1";
+
+// ── API helpers ──────────────────────────────────────────────────────
+async function apiGet(action, data){
+  if(!USE_API) return null;
+  let url = `${API_URL}?action=${action}`;
+  if(data) url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
+  const res  = await fetch(url);
+  return res.json();
+}
+
+async function loadAttFromAPI(){
+  if(!USE_API) return;
+  try{
+    const res = await apiGet("get");
+    if(res.att)        att        = res.att;
+    if(res.swapMap)    swapMap    = res.swapMap;
+    if(res.roundDates) roundDates = res.roundDates;
+  }catch(e){ console.warn("API load failed, using localStorage", e); }
+}
+
+async function saveToAPI(){
+  if(!USE_API){ saveLocal(); return; }
+  try{
+    await apiGet("setAtt",   { att, swapMap });
+    await apiGet("setDates", roundDates);
+    saveLocal(); // backup ใน localStorage ด้วยเสมอ
+  }catch(e){
+    console.warn("API save failed, saved locally only", e);
+    saveLocal();
+    toast("⚠️ บันทึก local เท่านั้น (API ไม่ตอบสนอง)");
+  }
+}
+
+function saveLocal(){
+  localStorage.setItem("att3_r1",   JSON.stringify(att));
+  localStorage.setItem("swap3_r1",  JSON.stringify(swapMap));
+  localStorage.setItem("roundDates",JSON.stringify(roundDates));
+}
 
 // ── Round colors ─────────────────────────────────────────────────────
 const ROUND_COLORS = [
@@ -306,6 +349,7 @@ async function loadSheet(){
     allData=FALLBACK.map(r=>({...r}));
     setStatus("err","ใช้ข้อมูลสำรอง — ตั้ง Sheet เป็น Public แล้ว Refresh");
   }
+  await loadAttFromAPI();
   buildUI();
 }
 
@@ -532,6 +576,23 @@ function buildSettingsPanel(n){
     <div class="settings-title">⚙️ ตั้งค่าวันที่อบรมแต่ละรุ่น</div>
     ${rows}
     <button class="btn-save-settings" onclick="saveSettings(${maxR})">💾 บันทึกการตั้งค่า</button>
+    <div class="divider"></div>
+    <div class="round-settings-group">
+      <div class="round-settings-header">🔗 Google Apps Script API</div>
+      <div class="settings-row">
+        <div class="settings-label">API URL</div>
+        <input class="settings-input" id="apiUrlInput"
+          placeholder="https://script.google.com/macros/s/XXXXX/exec"
+          value="${USE_API ? API_URL : localStorage.getItem('apiUrl')||''}" />
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
+        <button class="btn-save-settings" onclick="saveApiUrl()">💾 บันทึก URL</button>
+        <div style="font-size:.72rem;color:${USE_API?'var(--mg)':'var(--red)'};display:flex;align-items:center;gap:4px">
+          <div style="width:8px;height:8px;border-radius:50%;background:${USE_API?'var(--mg)':'var(--muted)'};flex-shrink:0"></div>
+          ${USE_API ? "✅ ใช้ Apps Script API — ทุกคนเห็นเหมือนกัน" : "⚠️ ยังใช้ localStorage — เฉพาะ browser นี้"}
+        </div>
+      </div>
+    </div>
     <div class="settings-note">
       💡 วันที่จะแสดงในหน้ารุ่นนั้นๆ โดยอัตโนมัติ<br>
       ระบบจะสร้างรุ่นใหม่เองเมื่อจำนวนผู้ลงทะเบียนเกิน ${ROUND_SIZE} คนต่อรุ่น
@@ -545,10 +606,11 @@ function saveSettings(maxR){
     const m = document.getElementById(`rmeta-${r}`)?.value||"";
     roundDates[r] = { date: d, meta: m };
   }
-  localStorage.setItem("roundDates", JSON.stringify(roundDates));
+  saveLocal();
+  if(USE_API) saveToAPI().catch(e=>console.warn(e));
   buildUI();
   go("settings");
-  toast("บันทึกการตั้งค่าแล้ว ✓");
+  toast("💾 บันทึกการตั้งค่าแล้ว ✓");
 }
 
 // ── Att actions ───────────────────────────────────────────────────────
@@ -615,8 +677,13 @@ function getR1Nick(id){
 }
 
 function saveAll(){
-  localStorage.setItem("att3_r1",  JSON.stringify(att));
-  localStorage.setItem("swap3_r1", JSON.stringify(swapMap));
+  // บันทึก localStorage ทันที (sync) ก่อนเสมอ
+  saveLocal();
+  toast("💾 บันทึกแล้ว ✓");
+  // ถ้ามี API ก็บันทึกขึ้น Sheets ด้วย (async)
+  if(USE_API){
+    saveToAPI().catch(e => console.warn("API save failed:", e));
+  }
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────
@@ -632,6 +699,17 @@ function activateTab(id){
   document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
   const target=document.getElementById("p-"+id);
   if(target) target.classList.add("on");
+}
+
+function saveApiUrl(){
+  const url = document.getElementById("apiUrlInput")?.value?.trim()||"";
+  localStorage.setItem("apiUrl", url);
+  // Reload page to apply new API_URL
+  toast("บันทึก URL แล้ว — กำลัง Reload...");
+  setTimeout(()=>{
+    // inject the URL into the page constant by reloading
+    window.location.reload();
+  }, 1200);
 }
 
 function toast(msg){
