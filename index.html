@@ -12,274 +12,256 @@
   --purple:#7B5EA7;--pbg:#F3EEF9;
   --red:#C62828;--rbg:#FFEBEE;
   --orange:#E65100;--obg:#FFF3E0;
+  --teal:#00695C;--tbg:#E0F2F1;
   --text:#1A2E1A;--muted:#5A7A54;--border:#C8E0C8;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);min-height:100vh;}
 
-/* Header */
-.hdr{background:var(--dg);padding:1.6rem 2rem 1.4rem;position:relative;overflow:hidden;}
+/* ── Header ── */
+.hdr{background:var(--dg);padding:1.5rem 2rem 1.3rem;position:relative;overflow:hidden;}
 .hdr::before{content:"";position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(107,174,107,.15);}
-.hdr::after{content:"";position:absolute;bottom:-35px;left:8%;width:120px;height:120px;border-radius:50%;background:rgba(74,140,63,.12);}
-.hdr-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;}
-.org{color:var(--sg);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
-.hdr h1{color:#fff;font-size:1.5rem;font-weight:700;line-height:1.25;}
+.hdr-inner{position:relative;z-index:1;max-width:960px;margin:0 auto;}
+.org{color:var(--sg);font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.hdr h1{color:#fff;font-size:1.45rem;font-weight:700;}
 .hdr h1 span{color:var(--sg);}
-.hdr-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem;}
-.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.88);font-size:.77rem;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.14);}
-.live-row{display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;flex-wrap:wrap;gap:.5rem;}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(107,174,107,.2);color:var(--sg);font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--sg);animation:pulse 2s infinite;}
+.hdr-row2{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;flex-wrap:wrap;gap:.5rem;}
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(107,174,107,.2);color:var(--sg);font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:20px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--sg);animation:pulse 2s infinite;}
 .dot.err{background:#EF9A9A;animation:none;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hdr-btn{padding:4px 12px;border-radius:11px;border:1px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.85);font-size:.74rem;cursor:pointer;font-family:"Sarabun",sans-serif;}
+.hdr-actions{display:flex;gap:.4rem;}
+.hdr-btn{padding:4px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.85);font-size:.72rem;cursor:pointer;font-family:"Sarabun",sans-serif;}
 .hdr-btn:hover{background:rgba(255,255,255,.1);}
 
-/* Stats */
-.stats{max-width:900px;margin:0 auto;padding:1rem 2rem 0;display:flex;gap:.65rem;flex-wrap:wrap;}
-.stat{background:#fff;border-radius:11px;padding:.7rem 1rem;box-shadow:0 1px 7px rgba(45,90,39,.08);flex:1;min-width:120px;border-top:3px solid var(--mint2);}
-.stat-n{font-family:"IBM Plex Mono",monospace;font-size:1.4rem;font-weight:500;color:var(--dg);}
-.stat-l{font-size:.68rem;color:var(--muted);margin-top:1px;}
+/* ── Floating register button ── */
+.reg-float{position:fixed;top:14px;right:16px;z-index:200;
+  display:flex;align-items:center;gap:6px;
+  background:#fff;color:var(--dg);text-decoration:none;
+  border-radius:22px;padding:7px 14px;
+  font-family:"Sarabun",sans-serif;font-size:.8rem;font-weight:700;
+  box-shadow:0 3px 14px rgba(0,0,0,.2);
+  border:2px solid var(--sg);
+  transition:transform .15s,box-shadow .15s;}
+.reg-float:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(0,0,0,.25);}
+.reg-float .rbadge{background:var(--mg);color:#fff;font-size:.6rem;padding:1px 6px;border-radius:10px;}
 
-/* Tabs */
-.tabs-wrap{max-width:900px;margin:.85rem auto 0;padding:0 2rem;display:flex;gap:.4rem;flex-wrap:wrap;}
-.tab{padding:.48rem 1rem;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;background:var(--mint2);color:var(--muted);transition:all .2s;font-family:"Sarabun",sans-serif;}
+/* ── Stats ── */
+.stats{max-width:960px;margin:0 auto;padding:.9rem 2rem 0;display:flex;gap:.6rem;flex-wrap:wrap;}
+.stat{background:#fff;border-radius:10px;padding:.65rem .95rem;box-shadow:0 1px 6px rgba(45,90,39,.08);flex:1;min-width:110px;border-top:3px solid var(--mint2);transition:border-color .3s;}
+.stat-n{font-family:"IBM Plex Mono",monospace;font-size:1.35rem;font-weight:500;color:var(--dg);}
+.stat-l{font-size:.65rem;color:var(--muted);margin-top:1px;}
+
+/* ── Tabs ── */
+.tabs-wrap{max-width:960px;margin:.8rem auto 0;padding:0 2rem;display:flex;gap:.35rem;flex-wrap:wrap;}
+.tab{padding:.44rem .95rem;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:none;background:var(--mint2);color:var(--muted);transition:all .2s;font-family:"Sarabun",sans-serif;}
 .tab.on{background:var(--dg);color:#fff;}
 .tab.hr.on{background:var(--purple);}
+.tab.settings.on{background:#37474F;color:#fff;}
 
-/* Main */
-.main{max-width:900px;margin:0 auto;padding:.9rem 2rem 2.5rem;}
+/* ── Main ── */
+.main{max-width:960px;margin:0 auto;padding:.85rem 2rem 2.5rem;}
 .panel{display:none;}.panel.on{display:block;}
 
-/* Round info card */
-.rcard{background:#fff;border-radius:11px;padding:.85rem 1.1rem;border-left:4px solid var(--mg);box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
-.rcard.p{border-left-color:var(--purple);}
-.rdate{font-size:.86rem;font-weight:600;color:var(--dg);}
-.rcard.p .rdate{color:var(--purple);}
-.rmeta{font-size:.74rem;color:var(--muted);margin-top:2px;}
+/* ── Round card ── */
+.rcard{background:#fff;border-radius:10px;padding:.8rem 1.1rem;border-left:4px solid var(--mg);box-shadow:0 1px 5px rgba(45,90,39,.07);margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.rdate{font-size:.84rem;font-weight:600;color:var(--dg);}
+.rmeta{font-size:.72rem;color:var(--muted);margin-top:2px;}
 
-/* Cap bar */
-.cap-card{background:#fff;border-radius:11px;padding:.85rem 1.1rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;display:flex;align-items:center;gap:.9rem;}
-.cap-n{font-family:"IBM Plex Mono",monospace;font-size:1.6rem;font-weight:500;color:var(--dg);min-width:48px;text-align:center;}
-.cap-sub{font-size:.68rem;color:var(--muted);text-align:center;}
+/* ── Cap bar ── */
+.cap-card{background:#fff;border-radius:10px;padding:.8rem 1.1rem;box-shadow:0 1px 5px rgba(45,90,39,.07);margin-bottom:.8rem;display:flex;align-items:center;gap:.85rem;}
+.cap-n{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:500;color:var(--dg);min-width:45px;text-align:center;}
+.cap-sub{font-size:.66rem;color:var(--muted);text-align:center;}
 .cap-bw{flex:1;}
-.cap-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:4px;}
+.cap-row{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-bottom:4px;}
 .cap-bar{height:8px;background:var(--mint2);border-radius:8px;overflow:hidden;}
-.cap-fill{height:100%;background:linear-gradient(90deg,var(--mg),var(--sg));border-radius:8px;transition:width .6s ease;}
-.cap-st{font-size:.72rem;font-weight:600;color:var(--mg);margin-top:4px;}
+.cap-fill{height:100%;border-radius:8px;transition:width .6s ease;}
+.fill-g{background:linear-gradient(90deg,var(--mg),var(--sg));}
+.fill-p{background:linear-gradient(90deg,var(--purple),#9B7EC8);}
+.fill-t{background:linear-gradient(90deg,var(--teal),#4DB6AC);}
+.cap-st{font-size:.7rem;font-weight:600;color:var(--mg);margin-top:3px;}
 
-/* Sec head */
-.sh{display:flex;align-items:center;gap:8px;margin:1rem 0 .7rem;}
-.sbadge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600;}
-.sb-g{background:var(--dg);color:#fff;}.sb-p{background:var(--purple);color:#fff;}.sb-o{background:var(--orange);color:#fff;}
-.scnt{font-size:.7rem;color:var(--muted);background:var(--mint2);padding:2px 8px;border-radius:20px;}
+/* ── Sec head ── */
+.sh{display:flex;align-items:center;gap:7px;margin:.95rem 0 .65rem;}
+.sbadge{display:inline-flex;align-items:center;padding:3px 11px;border-radius:20px;font-size:.76rem;font-weight:600;}
+.sb-g{background:var(--dg);color:#fff;}.sb-p{background:var(--purple);color:#fff;}.sb-t{background:var(--teal);color:#fff;}
+.scnt{font-size:.68rem;color:var(--muted);background:var(--mint2);padding:2px 8px;border-radius:20px;}
 
-/* Cards */
-.cards{display:flex;flex-direction:column;gap:.42rem;}
-.card{background:#fff;border-radius:10px;padding:.7rem .95rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 1px 5px rgba(45,90,39,.06);border-left:4px solid transparent;animation:fadeUp .35s ease both;}
+/* ── Cards ── */
+.cards{display:flex;flex-direction:column;gap:.38rem;}
+.card{background:#fff;border-radius:9px;padding:.65rem .9rem;display:flex;align-items:center;gap:.7rem;box-shadow:0 1px 4px rgba(45,90,39,.06);border-left:4px solid transparent;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .card.r1{border-left-color:var(--mg);}
 .card.r2c{border-left-color:var(--purple);background:var(--pbg);}
+.card.r3c{border-left-color:var(--teal);background:var(--tbg);}
 .card.swapped-up{border-left-color:var(--orange)!important;background:var(--obg)!important;}
-.card.moved-down{border-left-color:var(--muted)!important;background:#F5F5F5!important;opacity:.75;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.rank{font-family:"IBM Plex Mono",monospace;font-size:.9rem;font-weight:500;color:var(--sg);min-width:22px;text-align:center;}
+.card.moved-down{border-left-color:#9E9E9E!important;background:#FAFAFA!important;opacity:.8;}
+.rank{font-family:"IBM Plex Mono",monospace;font-size:.88rem;font-weight:500;color:var(--sg);min-width:21px;text-align:center;}
 .card.r2c .rank{color:var(--purple);opacity:.65;}
-.card.moved-down .rank{color:var(--muted);}
+.card.r3c .rank{color:var(--teal);}
+.card.moved-down .rank{color:#9E9E9E;}
 .card.swapped-up .rank{color:var(--orange);}
-.ava{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0;color:#fff;}
+.ava{width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;color:#fff;}
 .card.r1 .ava{background:linear-gradient(135deg,var(--mg),var(--sg));}
 .card.r2c .ava{background:linear-gradient(135deg,var(--purple),#9B7EC8);}
+.card.r3c .ava{background:linear-gradient(135deg,var(--teal),#4DB6AC);}
 .card.swapped-up .ava{background:linear-gradient(135deg,var(--orange),#FF8A65);}
 .card.moved-down .ava{background:#9E9E9E;}
 .ci{flex:1;min-width:0;}
-.cn{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cn{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .card.r2c .cn{color:var(--purple);}
-.card.moved-down .cn{color:var(--muted);}
-.ck{font-size:.72rem;color:var(--muted);margin-top:1px;}
+.card.r3c .cn{color:var(--teal);}
+.card.moved-down .cn{color:#9E9E9E;}
+.ck{font-size:.7rem;color:var(--muted);margin-top:1px;}
 .cr{text-align:right;flex-shrink:0;}
-.cid{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--muted);background:var(--mint);padding:1px 6px;border-radius:5px;}
+.cid{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted);background:var(--mint);padding:1px 5px;border-radius:4px;}
 .card.r2c .cid{background:rgba(123,94,167,.1);color:var(--purple);}
-.ct{font-size:.63rem;color:var(--muted);margin-top:2px;}
-.tag{font-size:.62rem;font-weight:600;padding:2px 7px;border-radius:8px;display:inline-block;margin-top:2px;}
+.card.r3c .cid{background:rgba(0,105,92,.1);color:var(--teal);}
+.ct{font-size:.62rem;color:var(--muted);margin-top:1px;}
+.tag{font-size:.6rem;font-weight:600;padding:2px 6px;border-radius:7px;display:inline-block;margin-top:2px;}
 .t-ok{background:var(--mint2);color:var(--dg);}
 .t-wl{background:rgba(123,94,167,.12);color:var(--purple);}
+.t-wl3{background:rgba(0,105,92,.12);color:var(--teal);}
 .t-pres{background:#E8F5E9;color:#2E7D32;}
 .t-swu{background:var(--obg);color:var(--orange);}
-.t-mov{background:#F5F5F5;color:var(--muted);}
+.t-mov{background:#F5F5F5;color:#9E9E9E;}
 
-/* Swap selector (modal-like inline) */
-.swap-sel{background:#fff;border:2px solid var(--orange);border-radius:12px;padding:.9rem 1.1rem;margin-top:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);}
-.swap-sel-title{font-size:.82rem;font-weight:700;color:var(--orange);margin-bottom:.6rem;}
-.swap-option{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;border-radius:8px;cursor:pointer;transition:background .15s;}
+/* ── Att buttons ── */
+.att-btns{display:flex;gap:3px;flex-shrink:0;}
+.att-btn{display:inline-flex;align-items:center;justify-content:center;height:27px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;font-size:.72rem;font-weight:600;transition:all .15s;background:#fff;font-family:"Sarabun",sans-serif;padding:0 7px;white-space:nowrap;}
+.att-btn.yes{background:var(--mg);border-color:var(--mg);color:#fff;}
+.att-btn.yes:not(.active):hover{background:var(--mint2);border-color:var(--mg);color:var(--mg);}
+.att-btn.swap.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+.att-btn.swap:not(.active){background:var(--obg);border-color:var(--orange);color:var(--orange);}
+.att-btn.clr{background:var(--rbg);border-color:var(--red);color:var(--red);font-size:.68rem;}
+
+/* ── Swap picker ── */
+.swap-sel{background:#fff;border:2px solid var(--orange);border-radius:10px;padding:.8rem 1rem;margin:.3rem 0 .5rem 2rem;box-shadow:0 4px 18px rgba(0,0,0,.1);}
+.swap-sel-title{font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:.5rem;}
+.swap-option{display:flex;align-items:center;gap:.55rem;padding:.45rem .6rem;border-radius:7px;cursor:pointer;transition:background .12s;}
 .swap-option:hover{background:var(--obg);}
-.swap-option-name{font-size:.84rem;font-weight:600;flex:1;}
-.swap-option-nick{font-size:.74rem;color:var(--muted);}
-.swap-cancel{margin-top:.5rem;font-size:.76rem;color:var(--muted);cursor:pointer;text-decoration:underline;}
+.swap-opt-name{font-size:.82rem;font-weight:600;flex:1;}
+.swap-opt-sub{font-size:.7rem;color:var(--muted);}
+.swap-go{color:var(--orange);font-size:.76rem;font-weight:700;}
+.swap-cancel{margin-top:.4rem;font-size:.72rem;color:var(--muted);cursor:pointer;text-decoration:underline;padding:.2rem 0;}
 
-/* Att toggle */
-.att{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--border);cursor:pointer;font-size:.9rem;transition:all .2s;background:#fff;user-select:none;flex-shrink:0;}
-.att:hover{border-color:var(--mg);background:var(--mint);}
-.att.yes{background:var(--mg);border-color:var(--mg);color:#fff;}
-.att.pending{background:#FFF3E0;border-color:var(--orange);color:var(--orange);}
+/* ── Settings panel ── */
+.settings-box{background:#fff;border-radius:10px;padding:1.1rem 1.3rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.8rem;}
+.settings-title{font-size:.9rem;font-weight:700;color:#37474F;margin-bottom:.9rem;display:flex;align-items:center;gap:6px;}
+.settings-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.65rem;flex-wrap:wrap;}
+.settings-label{font-size:.8rem;font-weight:600;color:var(--text);min-width:80px;}
+.settings-input{font-family:"Sarabun",sans-serif;font-size:.8rem;padding:.38rem .7rem;border:1.5px solid var(--border);border-radius:8px;color:var(--text);flex:1;min-width:200px;}
+.settings-input:focus{outline:none;border-color:var(--mg);}
+.settings-note{font-size:.72rem;color:var(--muted);background:var(--mint);padding:.5rem .8rem;border-radius:8px;margin-top:.5rem;line-height:1.6;}
+.btn-save-settings{padding:.5rem 1.2rem;border-radius:8px;border:none;cursor:pointer;background:var(--dg);color:#fff;font-family:"Sarabun",sans-serif;font-size:.82rem;font-weight:600;margin-top:.5rem;}
+.btn-save-settings:hover{background:#1E3F1B;}
+.divider{height:1px;background:var(--mint2);margin:.7rem 0;}
+.round-settings-group{padding:.65rem .8rem;background:var(--mint);border-radius:8px;margin-bottom:.5rem;}
+.round-settings-header{font-size:.78rem;font-weight:700;color:var(--dg);margin-bottom:.45rem;}
 
-/* Summary box */
-.sum-box{background:#fff;border-radius:11px;padding:.9rem 1.1rem;box-shadow:0 1px 6px rgba(45,90,39,.07);margin-bottom:.85rem;}
-.sum-title{font-size:.82rem;font-weight:700;color:var(--dg);margin-bottom:.6rem;}
-.sum-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;font-size:.82rem;}
-.sum-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+/* ── Summary ── */
+.sum-box{background:#fff;border-radius:10px;padding:.85rem 1.1rem;box-shadow:0 1px 5px rgba(45,90,39,.07);margin-bottom:.8rem;}
+.sum-title{font-size:.8rem;font-weight:700;color:var(--dg);margin-bottom:.5rem;}
+.sum-row{display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem;font-size:.8rem;}
+.sum-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 
-/* R2 box */
-.r2box{background:var(--cream);border:1.5px solid #E5D87A;border-radius:11px;padding:.9rem 1.1rem;margin-top:1rem;display:flex;gap:.75rem;align-items:flex-start;}
-.r2icon{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
-.r2title{font-size:.84rem;font-weight:700;color:#5C5000;margin-bottom:3px;}
-.r2body{font-size:.78rem;color:#7B6F00;line-height:1.6;}
-
-/* Reg btn */
-.reg-wrap{margin-top:1.1rem;}
-.reg-a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--dg);color:#fff;text-decoration:none;border-radius:12px;padding:.85rem 1.3rem;font-size:.92rem;font-weight:600;box-shadow:0 3px 11px rgba(45,90,39,.2);}
-.reg-badge{background:rgba(255,255,255,.2);font-size:.68rem;padding:2px 8px;border-radius:20px;}
-.reg-url{text-align:center;font-size:.68rem;color:var(--muted);margin-top:5px;}
-
-/* Footer */
-.footer{text-align:center;font-size:.68rem;color:var(--muted);padding:1.1rem 2rem;border-top:1px solid var(--mint2);max-width:900px;margin:0 auto;}
+/* ── Footer ── */
+.footer{text-align:center;font-size:.67rem;color:var(--muted);padding:1rem 2rem;border-top:1px solid var(--mint2);max-width:960px;margin:0 auto;}
 .footer strong{color:var(--mg);}
 
-/* Toast */
-.toast{position:fixed;bottom:1.3rem;right:1.3rem;background:var(--dg);color:#fff;padding:.6rem 1rem;border-radius:9px;font-size:.78rem;font-weight:600;transform:translateY(65px);opacity:0;transition:all .3s;z-index:999;}
+/* ── Toast ── */
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--dg);color:#fff;padding:.55rem .95rem;border-radius:8px;font-size:.76rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all .25s;z-index:999;}
 .toast.show{transform:translateY(0);opacity:1;}
 
-/* Skel */
-.skel{background:linear-gradient(90deg,var(--mint2) 25%,var(--mint) 50%,var(--mint2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:17px;margin:2px 0;}
+/* ── Skel ── */
+.skel{background:linear-gradient(90deg,var(--mint2) 25%,var(--mint) 50%,var(--mint2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:7px;height:16px;margin:2px 0;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skel-card{background:#fff;border-radius:10px;padding:.7rem .95rem;box-shadow:0 1px 5px rgba(45,90,39,.05);border-left:4px solid var(--mint2);margin-bottom:.42rem;}
+.skel-card{background:#fff;border-radius:9px;padding:.65rem .9rem;border-left:4px solid var(--mint2);margin-bottom:.38rem;}
 </style>
 </head>
 <body>
 
+<!-- ── Floating Register Button ── -->
+<a href="https://forms.gle/3utEAcFEz9Z4KyWk6" target="_blank" class="reg-float">
+  📝 ลงทะเบียน <span class="rbadge" id="floatBadge">รุ่น 2</span>
+</a>
+
+<!-- ── Header ── -->
 <div class="hdr">
   <div class="hdr-inner">
     <div class="org">⚖️ Nitirat Law & Collection — HR</div>
     <h1>อบรม <span>Macro & VBA</span> — ระบบติดตาม</h1>
-    <div class="hdr-meta">
-      <span class="chip">📅 รุ่น 1 · 25 เม.ย. 2569</span>
-      <span class="chip">📅 รุ่น 2 · 15 พ.ค. 2569</span>
-      <span class="chip">📍 ห้องประชุม 1</span>
-    </div>
-    <div class="live-row">
+    <div class="hdr-row2">
       <div class="live-badge"><div class="dot" id="dot"></div><span id="liveStatus">กำลังโหลด...</span></div>
-      <button class="hdr-btn" onclick="loadSheet()">🔄 Refresh</button>
-    </div>
-  </div>
-</div>
-
-<div class="stats">
-  <div class="stat"><div class="stat-n" id="sTotal">—</div><div class="stat-l">ลงทะเบียนทั้งหมด</div></div>
-  <div class="stat"><div class="stat-n" id="sR1Att">—</div><div class="stat-l">เข้าร่วมจริง รุ่น 1</div></div>
-  <div class="stat"><div class="stat-n" id="sSwaps">—</div><div class="stat-l">สลับตัว</div></div>
-  <div class="stat"><div class="stat-n" id="sR2">—</div><div class="stat-l">รอรุ่น 2</div></div>
-</div>
-
-<div class="tabs-wrap">
-  <button class="tab on"  onclick="go('r1')">✅ รุ่น 1</button>
-  <button class="tab"     onclick="go('r2')">🕐 รุ่น 2</button>
-  <button class="tab"     onclick="go('all')">📋 ทั้งหมด</button>
-  <button class="tab hr"  onclick="go('att')">📝 เช็คชื่อ (HR)</button>
-</div>
-
-<div class="main">
-
-  <!-- ══ รุ่น 1 ══ -->
-  <div class="panel on" id="p-r1">
-    <div class="rcard">
-      <div><div class="rdate">📅 วันเสาร์ที่ 25 เมษายน 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 👩‍💼 ทีม HR นิติรัฐ</div></div>
-    </div>
-    <div class="cap-card">
-      <div><div class="cap-n">10</div><div class="cap-sub">ที่นั่ง</div></div>
-      <div class="cap-bw">
-        <div class="cap-row"><span>ผู้ได้สิทธิ์ รุ่น 1</span><span id="capLbl">10 / 10 คน</span></div>
-        <div class="cap-bar"><div class="cap-fill" id="capFill" style="width:100%"></div></div>
-        <div class="cap-st" id="capSt">✅ รุ่น 1 เต็มแล้ว — รุ่น 2 เปิดรับอยู่</div>
+      <div class="hdr-actions">
+        <button class="hdr-btn" onclick="loadSheet()">🔄 Refresh</button>
+        <button class="hdr-btn" onclick="go('settings')">⚙️ ตั้งค่า</button>
       </div>
     </div>
-    <div class="sh"><span class="sbadge sb-g">✅ ผู้ได้รับสิทธิ์ รุ่น 1</span><span class="scnt" id="r1cnt">10 คน</span></div>
-    <div class="cards" id="r1list"><div class="skel-card"><div class="skel" style="width:75%"></div></div></div>
-    <div class="reg-wrap">
-      <a href="https://forms.gle/3utEAcFEz9Z4KyWk6" target="_blank" class="reg-a">
-        <span>📝</span><span>ลงทะเบียนเข้าร่วมอบรม</span>
-        <span class="reg-badge">รุ่น 2 เปิดรับ</span>
-      </a>
-      <p class="reg-url">forms.gle/3utEAcFEz9Z4KyWk6</p>
-    </div>
   </div>
-
-  <!-- ══ รุ่น 2 ══ -->
-  <div class="panel" id="p-r2">
-    <div class="rcard p">
-      <div><div class="rdate">📅 วันพฤหัสบดีที่ 15 พฤษภาคม 2569</div><div class="rmeta">⏰ 09.30–15.00 น. &nbsp;·&nbsp; 📍 ห้องประชุม 1</div></div>
-    </div>
-    <div class="sh"><span class="sbadge sb-p">🕐 รายชื่อรุ่น 2</span><span class="scnt" id="r2cnt">—</span></div>
-    <div class="cards" id="r2list"><div class="skel-card"><div class="skel" style="width:70%"></div></div></div>
-    <div class="r2box" style="margin-top:.9rem;">
-      <div class="r2icon">📋</div>
-      <div><div class="r2title">หมายเหตุรุ่น 2</div>
-      <div class="r2body">รายชื่อจะอัปเดตอัตโนมัติเมื่อมีการสลับตัวจากรุ่น 1<br>ผู้ที่สลับลงมาจากรุ่น 1 จะอยู่ต้นคิวรุ่น 2 โดยอัตโนมัติค่ะ</div></div>
-    </div>
-  </div>
-
-  <!-- ══ ทั้งหมด ══ -->
-  <div class="panel" id="p-all">
-    <div class="sh"><span class="sbadge sb-g">📋 รายชื่อทั้งหมด</span><span class="scnt" id="allCnt">—</span></div>
-    <div class="cards" id="allList"><div class="skel-card"><div class="skel" style="width:80%"></div></div></div>
-  </div>
-
-  <!-- ══ เช็คชื่อ HR ══ -->
-  <div class="panel" id="p-att">
-
-    <!-- Summary -->
-    <div class="sum-box" id="sumBox" style="display:none">
-      <div class="sum-title">📊 สรุปการเข้าร่วมจริง รุ่น 1</div>
-      <div id="sumRows"></div>
-    </div>
-
-    <div class="sh"><span class="sbadge sb-g">เช็คชื่อ รุ่น 1</span>
-      <span style="font-size:.72rem;color:var(--muted)">คลิก ✓ = มา &nbsp;·&nbsp; ถ้าไม่มาเลือกคนจากรุ่น 2 แทน</span>
-    </div>
-    <div id="attList"><div class="skel-card"><div class="skel" style="width:75%"></div></div></div>
-    <div id="swapSelector" style="display:none"></div>
-
-    <div style="display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap;">
-      <button onclick="saveAll()" style="padding:.55rem 1.2rem;border-radius:9px;border:none;cursor:pointer;background:var(--dg);color:#fff;font-family:'Sarabun',sans-serif;font-size:.84rem;font-weight:600;">💾 บันทึก</button>
-      <button onclick="resetAtt()" style="padding:.55rem 1.2rem;border-radius:9px;border:none;cursor:pointer;background:var(--rbg);color:var(--red);font-family:'Sarabun',sans-serif;font-size:.82rem;font-weight:600;">🔄 Reset</button>
-    </div>
-  </div>
-
 </div>
+
+<!-- ── Stats ── -->
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="sTotal">—</div><div class="stat-l">ลงทะเบียนทั้งหมด</div></div>
+  <div class="stat"><div class="stat-n" id="sRounds">—</div><div class="stat-l">จำนวนรุ่น</div></div>
+  <div class="stat"><div class="stat-n" id="sR1Att">—</div><div class="stat-l">เข้าร่วมจริง รุ่น 1</div></div>
+  <div class="stat"><div class="stat-n" id="sSwaps">—</div><div class="stat-l">สลับตัว</div></div>
+</div>
+
+<!-- ── Tabs (dynamic) ── -->
+<div class="tabs-wrap" id="tabsWrap"></div>
+
+<!-- ── Main ── -->
+<div class="main" id="mainContent"></div>
 
 <div class="footer"><span id="footerTs">—</span> &nbsp;·&nbsp; จัดโดย <strong>ฝ่าย HR นิติรัฐ Law & Collection</strong></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const SHEET_ID = "1ecMncRWKY0TnKUs8gooGWktRQBcXaKZtP834YebgfBg";
-const R1_MAX   = 10;
+// ── Config ──────────────────────────────────────────────────────────
+const SHEET_ID   = "1ecMncRWKY0TnKUs8gooGWktRQBcXaKZtP834YebgfBg";
+const ROUND_SIZE = 10;
 
-// ── State ──────────────────────────────────────────────────────────
+// ── State ────────────────────────────────────────────────────────────
 let allData = [];
-// att: { [id]: "yes" | "swapped" }  — "swapped" = ไม่มา สลับกับคนจาก R2
-// swapMap: { [r1_id]: { with: r2_person_object } }
-let att     = JSON.parse(localStorage.getItem("att2_r1")  || "{}");
-let swapMap = JSON.parse(localStorage.getItem("swap2_r1") || "{}");
+let att     = JSON.parse(localStorage.getItem("att3_r1")   || "{}");
+let swapMap = JSON.parse(localStorage.getItem("swap3_r1")  || "{}");
+let roundDates = JSON.parse(localStorage.getItem("roundDates") || JSON.stringify({
+  1: { date: "วันเสาร์ที่ 25 เมษายน 2569",     meta: "09.30–15.00 น. · ห้องประชุม 1 · วิทยากร: ทีม HR นิติรัฐ" },
+  2: { date: "วันพฤหัสบดีที่ 15 พฤษภาคม 2569", meta: "09.30–15.00 น. · ห้องประชุม 1" },
+  3: { date: "",                                  meta: "09.30–15.00 น. · ห้องประชุม 1" },
+  4: { date: "",                                  meta: "09.30–15.00 น. · ห้องประชุม 1" },
+}));
+let pendingSwapFor = null;
+let activeTab = "r1";
 
-// ── Fetch ──────────────────────────────────────────────────────────
-function fmtTime(ts){
-  try{
-    const m = ts.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
-    if(!m) return ts;
-    const mo=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-    return `${m[2]} ${mo[+m[1]]} ${m[4]}:${m[5]}`;
-  }catch(e){return ts;}
+// ── Round colors ─────────────────────────────────────────────────────
+const ROUND_COLORS = [
+  { cls:"r1",  badge:"sb-g",  fill:"fill-g",  color:"var(--mg)",     tagOk:"t-ok",  tagWl:"t-wl" },
+  { cls:"r2c", badge:"sb-p",  fill:"fill-p",  color:"var(--purple)", tagOk:"t-wl",  tagWl:"t-wl" },
+  { cls:"r3c", badge:"sb-t",  fill:"fill-t",  color:"var(--teal)",   tagOk:"t-wl3", tagWl:"t-wl3" },
+  { cls:"r3c", badge:"sb-t",  fill:"fill-t",  color:"var(--teal)",   tagOk:"t-wl3", tagWl:"t-wl3" },
+];
+
+// ── Computed ─────────────────────────────────────────────────────────
+function numRounds(){ return Math.max(1, Math.ceil(allData.length / ROUND_SIZE)); }
+function roundSlice(r){ return allData.slice((r-1)*ROUND_SIZE, r*ROUND_SIZE); }
+
+function getR2Effective(){
+  // For round 2: original R2 people + R1 no-shows; minus swap-ups
+  const r1 = roundSlice(1);
+  const r2orig = roundSlice(2);
+  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
+  const movedDown = r1.filter(p => att[p.id]==="swapped");
+  return [
+    ...movedDown.map(p=>({...p, movedFrom:"r1"})),
+    ...r2orig.filter(p=>!swapUpIds.has(p.id))
+  ];
 }
 
-const FALLBACK = [
+// ── Fallback ──────────────────────────────────────────────────────────
+const FALLBACK=[
   {name:"ไลลา หล้ะหมูด",            nick:"ไลลา",  id:"3110",time:"18 เม.ย. 15:22"},
   {name:"ภัทราวดี เหม่นครบุรี",      nick:"เนส",   id:"0480",time:"18 เม.ย. 15:28"},
   {name:"กนกวรรณ ราตรี",             nick:"มุ้ย",  id:"2214",time:"18 เม.ย. 15:47"},
@@ -294,6 +276,15 @@ const FALLBACK = [
   {name:"อภิญญา ศรีตะโชติ",          nick:"แอน",  id:"0991",time:"20 เม.ย. 13:23"},
   {name:"พงษ์ศักดิ์ หงษ์วิบูลย์ศรี",nick:"เอส",  id:"0153",time:"20 เม.ย. 13:25"},
 ];
+
+function fmtTime(ts){
+  try{
+    const m=ts.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
+    if(!m)return ts;
+    const mo=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    return `${m[2]} ${mo[+m[1]]} ${m[4]}:${m[5]}`;
+  }catch(e){return ts;}
+}
 
 async function loadSheet(){
   setStatus("loading");
@@ -312,73 +303,125 @@ async function loadSheet(){
     allData=FALLBACK.map(r=>({...r}));
     setStatus("err","ใช้ข้อมูลสำรอง — ตั้ง Sheet เป็น Public แล้ว Refresh");
   }
-  render();
+  buildUI();
 }
 
 function setStatus(s,msg){
-  document.getElementById("dot").className = s==="err"?"dot err":"dot";
-  document.getElementById("liveStatus").textContent = msg||(s==="loading"?"กำลังโหลด...":"");
+  document.getElementById("dot").className=s==="err"?"dot err":"dot";
+  document.getElementById("liveStatus").textContent=msg||(s==="loading"?"กำลังโหลด...":"");
 }
 
-// ── Computed lists ─────────────────────────────────────────────────
-// r1_effective = R1 people who came + R2 swap-ups
-// r2_effective = R2 original (minus swap-ups) + R1 no-shows (moved down)
-function getEffective(){
-  const r1Orig = allData.slice(0, R1_MAX);
-  const r2Orig = allData.slice(R1_MAX);
+// ── Build dynamic UI ──────────────────────────────────────────────────
+function buildUI(){
+  const n = numRounds();
+  const r2eff = getR2Effective();
 
-  // Swap-ups = R2 people who replaced R1 no-shows
-  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
-
-  const r1Eff = [];
-  const movedDown = []; // R1 no-shows (moved to R2)
-
-  r1Orig.forEach(p => {
-    if (att[p.id] === "swapped") {
-      movedDown.push({...p, movedFrom:"r1"});
-    } else {
-      r1Eff.push({...p, attStatus: att[p.id] || "pending"});
-    }
-  });
-
-  // Add swap-ups from R2
-  Object.entries(swapMap).forEach(([r1Id, r2Person]) => {
-    r1Eff.push({...r2Person, attStatus:"swapped-up", swappedFor: r1Id});
-  });
-
-  const r2Eff = [
-    ...movedDown,
-    ...r2Orig.filter(p => !swapUpIds.has(p.id))
-  ];
-
-  return {r1Eff, r2Eff, movedDown, swapUpIds};
-}
-
-// ── Render ─────────────────────────────────────────────────────────
-function render(){
-  const r1 = allData.slice(0, R1_MAX);
-  const r2 = allData.slice(R1_MAX);
-  const {r1Eff, r2Eff} = getEffective();
-
-  const totalAtt = r1Eff.filter(p => p.attStatus === "yes" || p.attStatus === "swapped-up").length;
-  const numSwaps = Object.keys(swapMap).length;
-
+  // Stats
+  const present = Object.values(att).filter(v=>v==="yes").length;
+  const swaps   = Object.keys(swapMap).length;
   document.getElementById("sTotal").textContent  = allData.length;
-  document.getElementById("sR1Att").textContent  = totalAtt || "—";
-  document.getElementById("sSwaps").textContent  = numSwaps || "—";
-  document.getElementById("sR2").textContent     = r2Eff.length || "—";
-  document.getElementById("capLbl").textContent  = `${r1.length} / ${R1_MAX} คน`;
-  document.getElementById("r1cnt").textContent   = `${r1.length} คน`;
-  document.getElementById("r2cnt").textContent   = r2Eff.length ? `${r2Eff.length} คน` : "—";
-  document.getElementById("allCnt").textContent  = `${allData.length} คน`;
+  document.getElementById("sRounds").textContent = n;
+  document.getElementById("sR1Att").textContent  = (present+swaps)||"—";
+  document.getElementById("sSwaps").textContent  = swaps||"—";
 
-  const now = new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-  document.getElementById("footerTs").textContent = "อัปเดตล่าสุด: " + now;
+  // Floating badge
+  const nextOpen = n>1 ? `รุ่น ${n}` : (allData.length>=ROUND_SIZE ? "รุ่น 2" : "รุ่น 1");
+  document.getElementById("floatBadge").textContent = nextOpen;
 
-  renderR1pub(r1);
-  renderR2pub(r2Eff);
-  renderAllTab();
-  renderAttTab(r1);
+  // Footer
+  const now=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  document.getElementById("footerTs").textContent="อัปเดตล่าสุด: "+now;
+
+  // Build tabs
+  buildTabs(n);
+
+  // Build panels
+  buildPanels(n, r2eff);
+
+  // Activate current tab
+  activateTab(activeTab);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────
+function buildTabs(n){
+  const wrap = document.getElementById("tabsWrap");
+  const roundEmojis = ["✅","🕐","🔵","🟣"];
+  let tabs = "";
+  for(let r=1;r<=n;r++){
+    tabs += `<button class="tab" data-tab="r${r}" onclick="go('r${r}')">${roundEmojis[r-1]||"⏳"} รุ่น ${r}</button>`;
+  }
+  tabs += `<button class="tab" data-tab="all" onclick="go('all')">📋 ทั้งหมด</button>`;
+  tabs += `<button class="tab hr" data-tab="att" onclick="go('att')">📝 เช็คชื่อ (HR)</button>`;
+  tabs += `<button class="tab settings" data-tab="settings" onclick="go('settings')">⚙️ ตั้งค่า</button>`;
+  wrap.innerHTML = tabs;
+}
+
+// ── Panels ────────────────────────────────────────────────────────────
+function buildPanels(n, r2eff){
+  const mc = document.getElementById("mainContent");
+  let html = "";
+
+  for(let r=1;r<=n;r++){
+    const data = r===2 ? r2eff : roundSlice(r);
+    const col  = ROUND_COLORS[Math.min(r-1,3)];
+    const cfg  = roundDates[r] || {date:"ยังไม่กำหนดวันที่",meta:"09.30–15.00 น. · ห้องประชุม 1"};
+    const pct  = Math.min(100, Math.round(data.length/ROUND_SIZE*100));
+    const isFull = roundSlice(r).length >= ROUND_SIZE;
+
+    html += `<div class="panel" id="p-r${r}">
+      <div class="rcard" style="border-left-color:${col.color}">
+        <div>
+          <div class="rdate" style="color:${col.color}">${cfg.date||`<span style="color:var(--muted)">ยังไม่กำหนดวันที่ — กด ⚙️ ตั้งค่า</span>`}</div>
+          <div class="rmeta">${cfg.meta}</div>
+        </div>
+      </div>
+      <div class="cap-card">
+        <div><div class="cap-n">${data.length}</div><div class="cap-sub">คน</div></div>
+        <div class="cap-bw">
+          <div class="cap-row"><span>รุ่นที่ ${r}</span><span>${data.length} / ${ROUND_SIZE} ที่นั่ง</span></div>
+          <div class="cap-bar"><div class="cap-fill ${col.fill}" style="width:${pct}%"></div></div>
+          <div class="cap-st" style="color:${col.color}">${isFull?`✅ รุ่น ${r} เต็มแล้ว`:`🟡 รับได้อีก ${ROUND_SIZE-data.length} ที่นั่ง`}</div>
+        </div>
+      </div>
+      <div class="sh"><span class="sbadge ${col.badge}">รุ่นที่ ${r}</span><span class="scnt">${data.length} คน</span></div>
+      <div class="cards">${renderCards(data, r)}</div>
+    </div>`;
+  }
+
+  // All tab
+  html += `<div class="panel" id="p-all">
+    <div class="sh"><span class="sbadge sb-g">📋 ทั้งหมด</span><span class="scnt">${allData.length} คน</span></div>
+    <div class="cards">${allData.map((p,i)=>{
+      const r = Math.floor(i/ROUND_SIZE)+1;
+      const col = ROUND_COLORS[Math.min(r-1,3)];
+      return mkCard(p, i+1, col.cls, `<div class="tag ${col.tagOk}">รุ่น ${r}</div>`, i*.035);
+    }).join("")}</div>
+  </div>`;
+
+  // Att tab
+  html += `<div class="panel" id="p-att">${buildAttPanel()}</div>`;
+
+  // Settings tab
+  html += `<div class="panel" id="p-settings">${buildSettingsPanel(n)}</div>`;
+
+  mc.innerHTML = html;
+
+  // Re-render pickers if any pending
+  if(pendingSwapFor && att[pendingSwapFor]==="swapped"){
+    renderPickerInline(pendingSwapFor);
+  }
+}
+
+function renderCards(data, round){
+  if(!data.length) return `<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem">ยังไม่มีรายชื่อ</div>`;
+  const col = ROUND_COLORS[Math.min(round-1,3)];
+  return data.map((p,i)=>{
+    const rankLabel = p.movedFrom==="r1" ? `↓` : (round>1?`#${i+1}`:`${i+1}`);
+    const tag = p.movedFrom==="r1"
+      ? `<div class="tag t-mov">ย้ายจากรุ่น 1</div>`
+      : `<div class="tag ${col.tagOk}">${round===1?"ยืนยันสิทธิ์":"รอรุ่น "+round}</div>`;
+    return mkCard(p, rankLabel, col.cls, tag, i*.045);
+  }).join("");
 }
 
 function mkCard(p, rank, cls, tagHtml, delay=0){
@@ -390,204 +433,202 @@ function mkCard(p, rank, cls, tagHtml, delay=0){
   </div>`;
 }
 
-function renderR1pub(data){
-  document.getElementById("r1list").innerHTML =
-    data.map((p,i) => mkCard(p, i+1, "r1", `<div class="tag t-ok">ยืนยันสิทธิ์</div>`, i*.05)).join("");
-}
-
-function renderR2pub(data){
-  const el = document.getElementById("r2list");
-  if(!data.length){
-    el.innerHTML=`<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.82rem">ยังไม่มีรายชื่อ</div>`;
-    return;
-  }
-  el.innerHTML = data.map((p,i) => {
-    const cls = p.movedFrom === "r1" ? "r2c" : "r2c";
-    const tag = p.movedFrom === "r1"
-      ? `<div class="tag t-mov">ย้ายจากรุ่น 1</div>`
-      : `<div class="tag t-wl">รอรุ่น 2</div>`;
-    return mkCard(p, `#${i+1}`, cls, tag, i*.05);
-  }).join("");
-}
-
-function renderAllTab(){
-  document.getElementById("allList").innerHTML =
-    allData.map((p,i) => {
-      const isR1 = i < R1_MAX;
-      return mkCard(p, i+1, isR1?"r1":"r2c",
-        isR1 ? `<div class="tag t-ok">รุ่น 1</div>` : `<div class="tag t-wl">รุ่น 2</div>`,
-        i*.04);
-    }).join("");
-}
-
-// ── Att tab ────────────────────────────────────────────────────────
-let pendingSwapFor = null; // r1_id we are picking a swap for
-
-function renderAttTab(r1){
-  const {movedDown, swapUpIds} = getEffective();
-  const movedIds = new Set(movedDown.map(p=>p.id));
+// ── Att panel ─────────────────────────────────────────────────────────
+function buildAttPanel(){
+  const r1 = roundSlice(1);
+  const present = r1.filter(p=>att[p.id]==="yes").length;
+  const swaps   = Object.keys(swapMap).length;
+  const total   = present+swaps;
 
   let html = "";
-  r1.forEach((p,i) => {
-    const st = att[p.id];
+
+  // Summary
+  if(total>0){
+    html += `<div class="sum-box">
+      <div class="sum-title">📊 สรุปการเข้าร่วม รุ่น 1</div>
+      <div class="sum-row"><div class="sum-dot" style="background:var(--mg)"></div><span>เข้าร่วม: <strong>${present} คน</strong></span></div>
+      ${swaps?`<div class="sum-row"><div class="sum-dot" style="background:var(--orange)"></div><span>สลับตัว: <strong>${swaps} คู่</strong></span></div>`:""}
+      <div class="sum-row" style="border-top:1px solid var(--mint2);margin-top:.3rem;padding-top:.3rem">
+        <div class="sum-dot" style="background:var(--dg)"></div>
+        <span>รวมเข้าร่วมจริง: <strong>${total} / ${ROUND_SIZE} คน</strong></span>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="sh"><span class="sbadge sb-g">เช็คชื่อ รุ่น 1</span>
+    <span style="font-size:.7rem;color:var(--muted)">✓ มา &nbsp;|&nbsp; ↔ สลับกับคนในรุ่น 2</span>
+  </div>`;
+
+  // Each R1 person
+  r1.forEach((p,i)=>{
+    const st   = att[p.id];
     const swap = swapMap[p.id];
-    let rowCls = "r1";
-    let togCls = "";
-    let togTxt = "";
-    let extra  = "";
+    const isYes  = st==="yes";
+    const isSwap = st==="swapped";
+    const rowCls = isYes?"r1":isSwap?"moved-down":"r1";
+    let stTag = "";
+    if(isYes)  stTag = `<div class="tag t-pres">✓ มา</div>`;
+    if(isSwap) stTag = swap
+      ? `<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">ไม่มา → ${swap.nick} แทน</div>`
+      : `<div class="tag" style="background:var(--rbg);color:var(--red);font-size:.6rem">ไม่มา — รอเลือกผู้แทน</div>`;
 
-    if(st === "yes"){
-      rowCls = "r1"; togCls = "yes"; togTxt = "✓";
-      extra = `<div class="tag t-pres">เข้าร่วม ✓</div>`;
-    } else if(st === "swapped"){
-      rowCls = "moved-down"; togCls = "pending"; togTxt = "→";
-      const sub = swap ? `สลับกับ ${swap.name} (${swap.nick})` : "เลือกผู้แทน...";
-      extra = `<div class="tag" style="background:var(--obg);color:var(--orange)">ไม่มา · ${sub}</div>`;
-    } else {
-      togTxt = "";
-    }
-
-    html += `<div class="card ${rowCls}" id="card-${p.id}" style="animation-delay:${i*.05}s">
+    html += `<div class="card ${rowCls}" style="animation-delay:${i*.05}s">
       <div class="rank">${i+1}</div>
       <div class="ava">${p.name.charAt(0)}</div>
-      <div class="ci"><div class="cn">${p.name}</div><div class="ck">ชื่อเล่น: ${p.nick}</div></div>
-      <div class="cr"><div class="cid">${p.id}</div>${extra}</div>
-      <div class="att ${togCls}" onclick="cycleAtt('${p.id}')" title="คลิก: มา / ไม่มา+สลับ / ยกเลิก">${togTxt}</div>
-    </div>`;
+      <div class="ci"><div class="cn">${p.name}</div><div class="ck">${p.nick}</div>${stTag}</div>
+      <div class="att-btns">
+        <button class="att-btn yes ${isYes?"active":""}" onclick="markYes('${p.id}')">✓ มา</button>
+        <button class="att-btn swap ${isSwap?"active":""}" onclick="markSwap('${p.id}')">↔ สลับ</button>
+        ${(isYes||isSwap)?`<button class="att-btn clr" onclick="clearAtt('${p.id}')">✕</button>`:""}
+      </div>
+    </div>
+    <div id="picker-${p.id}" style="margin-left:1rem"></div>`;
   });
 
-  // Show swap-ups at bottom
+  // Swap-ups
   if(Object.keys(swapMap).length){
-    html += `<div style="margin:.6rem 0 .3rem;font-size:.74rem;font-weight:600;color:var(--orange)">🔄 ขยับขึ้นจากรุ่น 2</div>`;
-    Object.entries(swapMap).forEach(([r1Id, r2p]) => {
-      html += `<div class="card swapped-up">
+    html += `<div style="margin:.65rem 0 .3rem;font-size:.72rem;font-weight:700;color:var(--orange)">🔄 ขยับขึ้นจากรุ่น 2</div>`;
+    Object.entries(swapMap).forEach(([r1Id,r2p])=>{
+      html += `<div class="card swapped-up" style="display:flex;align-items:center">
         <div class="rank">↑</div>
         <div class="ava">${r2p.name.charAt(0)}</div>
-        <div class="ci"><div class="cn">${r2p.name}</div><div class="ck">${r2p.nick} · แทน ${getR1Name(r1Id)}</div></div>
+        <div class="ci"><div class="cn">${r2p.name}</div><div class="ck">${r2p.nick} · แทน ${getR1Nick(r1Id)}</div></div>
         <div class="cr"><div class="cid">${r2p.id}</div><div class="tag t-swu">เข้าแทน</div></div>
+        <button class="att-btn clr" style="margin-left:6px" onclick="removeSwapUp('${r1Id}')">✕</button>
       </div>`;
     });
   }
 
-  document.getElementById("attList").innerHTML = html;
-  renderSummary(r1);
-}
-
-function getR1Name(id){
-  const p = allData.slice(0,R1_MAX).find(x=>x.id===id);
-  return p ? p.nick || p.name : id;
-}
-
-function renderSummary(r1){
-  const {r1Eff, r2Eff} = getEffective();
-  const present   = r1.filter(p => att[p.id] === "yes").length;
-  const swapped   = Object.keys(swapMap).length;
-  const missing   = r1.filter(p => att[p.id] === "swapped" && !swapMap[p.id]).length;
-  const notMarked = r1.filter(p => !att[p.id]).length;
-  const total = present + swapped;
-
-  if(total === 0 && notMarked === r1.length){
-    document.getElementById("sumBox").style.display = "none";
-    return;
-  }
-  document.getElementById("sumBox").style.display = "block";
-  document.getElementById("sumRows").innerHTML = `
-    <div class="sum-row"><div class="sum-dot" style="background:var(--mg)"></div><span>เข้าร่วม: <strong>${present} คน</strong></span></div>
-    ${swapped ? `<div class="sum-row"><div class="sum-dot" style="background:var(--orange)"></div><span>สลับตัว (เข้าแทน): <strong>${swapped} คู่</strong></span></div>` : ""}
-    ${missing ? `<div class="sum-row"><div class="sum-dot" style="background:var(--red)"></div><span>ไม่มา ยังไม่เลือกผู้แทน: <strong>${missing} คน</strong></span></div>` : ""}
-    ${notMarked ? `<div class="sum-row"><div class="sum-dot" style="background:var(--muted)"></div><span>ยังไม่เช็ค: <strong>${notMarked} คน</strong></span></div>` : ""}
-    <div class="sum-row" style="margin-top:.3rem;border-top:1px solid var(--border);padding-top:.3rem">
-      <div class="sum-dot" style="background:var(--dg)"></div>
-      <span>เข้าร่วมจริงรุ่น 1: <strong>${total} / 10 คน</strong></span>
-    </div>`;
-  document.getElementById("sR1Att").textContent = total || "—";
-  document.getElementById("sSwaps").textContent = swapped || "—";
-}
-
-// ── Att cycle: blank → yes → swapped+picker → blank ───────────────
-function cycleAtt(id){
-  const cur = att[id];
-  if(!cur){
-    att[id] = "yes";
-    delete swapMap[id];
-    save(); renderAttTab(allData.slice(0,R1_MAX));
-  } else if(cur === "yes"){
-    att[id] = "swapped";
-    save(); renderAttTab(allData.slice(0,R1_MAX));
-    showSwapPicker(id);
-  } else {
-    delete att[id];
-    delete swapMap[id];
-    save(); renderAttTab(allData.slice(0,R1_MAX));
-    hideSwapPicker();
-  }
-}
-
-// ── Swap picker ────────────────────────────────────────────────────
-function showSwapPicker(r1Id){
-  pendingSwapFor = r1Id;
-  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
-  const r2 = allData.slice(R1_MAX).filter(p => !swapUpIds.has(p.id) || swapMap[r1Id]?.id === p.id);
-
-  const opts = r2.map(p => `
-    <div class="swap-option" onclick="confirmSwap('${r1Id}','${p.id}')">
-      <div class="ava" style="background:linear-gradient(135deg,var(--purple),#9B7EC8);width:28px;height:28px;font-size:.76rem">${p.name.charAt(0)}</div>
-      <div>
-        <div class="swap-option-name">${p.name}</div>
-        <div class="swap-option-nick">${p.nick} · #${allData.indexOf(p)+1-R1_MAX+1} ในคิว</div>
-      </div>
-    </div>`).join("") || `<div style="color:var(--muted);font-size:.8rem;padding:.5rem">ไม่มีรายชื่อในรุ่น 2 แล้ว</div>`;
-
-  const r1Name = getR1Name(r1Id);
-  const el = document.getElementById("swapSelector");
-  el.style.display = "block";
-  el.innerHTML = `<div class="swap-sel">
-    <div class="swap-sel-title">เลือกผู้เข้าแทน ${r1Name} จากรุ่น 2</div>
-    ${opts}
-    <div class="swap-cancel" onclick="cancelSwap('${r1Id}')">✕ ยกเลิก (ไม่สลับ)</div>
+  html += `<div style="display:flex;gap:.5rem;margin-top:.85rem;flex-wrap:wrap">
+    <button onclick="saveAll()" style="padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;background:var(--dg);color:#fff;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600">💾 บันทึก</button>
+    <button onclick="if(confirm('Reset การเช็คชื่อทั้งหมด?')){att={};swapMap={};saveAll();buildUI();toast('Reset แล้ว')}" style="padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;background:var(--rbg);color:var(--red);font-family:'Sarabun',sans-serif;font-size:.78rem;font-weight:600">🔄 Reset</button>
   </div>`;
-
-  el.scrollIntoView({behavior:"smooth", block:"center"});
+  return html;
 }
 
-function hideSwapPicker(){
-  document.getElementById("swapSelector").style.display = "none";
-  pendingSwapFor = null;
+// ── Settings panel ────────────────────────────────────────────────────
+function buildSettingsPanel(n){
+  const maxR = Math.max(n+1, 3); // show at least 3 rounds in settings
+  let rows = "";
+  for(let r=1;r<=maxR;r++){
+    const cfg = roundDates[r]||{date:"",meta:"09.30–15.00 น. · ห้องประชุม 1"};
+    rows += `<div class="round-settings-group">
+      <div class="round-settings-header">รุ่นที่ ${r} ${r<=n?"✅ (มีผู้ลงทะเบียนแล้ว)":"(ยังไม่มีผู้ลงทะเบียน)"}</div>
+      <div class="settings-row">
+        <div class="settings-label">วันที่อบรม</div>
+        <input class="settings-input" id="rdate-${r}" placeholder="เช่น วันเสาร์ที่ 25 เมษายน 2569" value="${cfg.date||""}">
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">ข้อมูลเพิ่มเติม</div>
+        <input class="settings-input" id="rmeta-${r}" placeholder="เช่น 09.30–15.00 น. · ห้องประชุม 1" value="${cfg.meta||""}">
+      </div>
+    </div>`;
+  }
+
+  return `<div class="settings-box">
+    <div class="settings-title">⚙️ ตั้งค่าวันที่อบรมแต่ละรุ่น</div>
+    ${rows}
+    <button class="btn-save-settings" onclick="saveSettings(${maxR})">💾 บันทึกการตั้งค่า</button>
+    <div class="settings-note">
+      💡 วันที่จะแสดงในหน้ารุ่นนั้นๆ โดยอัตโนมัติ<br>
+      ระบบจะสร้างรุ่นใหม่เองเมื่อจำนวนผู้ลงทะเบียนเกิน ${ROUND_SIZE} คนต่อรุ่น
+    </div>
+  </div>`;
+}
+
+function saveSettings(maxR){
+  for(let r=1;r<=maxR;r++){
+    const d = document.getElementById(`rdate-${r}`)?.value||"";
+    const m = document.getElementById(`rmeta-${r}`)?.value||"";
+    roundDates[r] = { date: d, meta: m };
+  }
+  localStorage.setItem("roundDates", JSON.stringify(roundDates));
+  buildUI();
+  go("settings");
+  toast("บันทึกการตั้งค่าแล้ว ✓");
+}
+
+// ── Att actions ───────────────────────────────────────────────────────
+function markYes(id){
+  att[id]="yes"; delete swapMap[id]; pendingSwapFor=null;
+  saveAll(); buildUI(); activateTab("att");
+}
+
+function markSwap(id){
+  att[id]="swapped"; pendingSwapFor=id;
+  saveAll(); buildUI(); activateTab("att");
+  renderPickerInline(id);
+}
+
+function clearAtt(id){
+  delete att[id]; delete swapMap[id]; pendingSwapFor=null;
+  saveAll(); buildUI(); activateTab("att");
+}
+
+function removeSwapUp(r1Id){
+  delete swapMap[r1Id];
+  saveAll(); buildUI(); activateTab("att");
+}
+
+function renderPickerInline(r1Id){
+  const el = document.getElementById("picker-"+r1Id);
+  if(!el) return;
+  const swapUpIds = new Set(Object.entries(swapMap).filter(([k])=>k!==r1Id).map(([,v])=>v.id));
+  const r2avail  = roundSlice(2).filter(p=>!swapUpIds.has(p.id));
+  const r1Nick   = getR1Nick(r1Id);
+
+  const opts = r2avail.map((p,i)=>`
+    <div class="swap-option" onclick="confirmSwap('${r1Id}','${p.id}')">
+      <div class="ava" style="background:linear-gradient(135deg,var(--purple),#9B7EC8);width:27px;height:27px;font-size:.76rem;flex-shrink:0">${p.name.charAt(0)}</div>
+      <div style="flex:1"><div class="swap-opt-name">${p.name}</div><div class="swap-opt-sub">${p.nick} · คิวที่ ${i+1} ในรุ่น 2</div></div>
+      <div class="swap-go">เลือก →</div>
+    </div>`).join("") || `<div style="color:var(--muted);font-size:.78rem;padding:.4rem">ไม่มีรายชื่อในรุ่น 2</div>`;
+
+  el.innerHTML=`<div class="swap-sel">
+    <div class="swap-sel-title">เลือกคนจากรุ่น 2 มาแทน "${r1Nick}"</div>
+    ${opts}
+    <div class="swap-cancel" onclick="closePickerOnly('${r1Id}')">✕ ปิด (ไม่มีผู้แทน)</div>
+  </div>`;
+  el.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function closePickerOnly(r1Id){
+  const el=document.getElementById("picker-"+r1Id);
+  if(el) el.innerHTML="";
 }
 
 function confirmSwap(r1Id, r2Id){
-  const r2Person = allData.find(p => p.id === r2Id);
-  if(!r2Person) return;
-  swapMap[r1Id] = {...r2Person};
-  save(); hideSwapPicker(); renderAttTab(allData.slice(0,R1_MAX)); render();
-  toast(`✓ ${getR1Name(r1Id)} ← สลับกับ ${r2Person.nick}`);
+  const r2p = allData.find(p=>p.id===r2Id);
+  if(!r2p) return;
+  swapMap[r1Id]={...r2p};
+  pendingSwapFor=null;
+  saveAll(); buildUI(); activateTab("att");
+  toast(`↔ ${getR1Nick(r1Id)} ⇄ ${r2p.nick}`);
 }
 
-function cancelSwap(r1Id){
-  // ยกเลิกการสลับ แต่ยังคง "swapped" (ไม่มา ไม่มีผู้แทน)
-  delete swapMap[r1Id];
-  save(); hideSwapPicker(); renderAttTab(allData.slice(0,R1_MAX));
+function getR1Nick(id){
+  const p=roundSlice(1).find(x=>x.id===id);
+  return p?(p.nick||p.name):id;
 }
 
-function saveAll(){ save(); toast("บันทึกแล้ว ✓"); }
-
-function save(){
-  localStorage.setItem("att2_r1",  JSON.stringify(att));
-  localStorage.setItem("swap2_r1", JSON.stringify(swapMap));
+function saveAll(){
+  localStorage.setItem("att3_r1",  JSON.stringify(att));
+  localStorage.setItem("swap3_r1", JSON.stringify(swapMap));
 }
 
-function resetAtt(){
-  if(!confirm("Reset การเช็คชื่อทั้งหมดไหมคะ?")) return;
-  att={}; swapMap={};
-  localStorage.removeItem("att2_r1"); localStorage.removeItem("swap2_r1");
-  hideSwapPicker(); render(); toast("Reset แล้ว");
-}
-
+// ── Tab switch ────────────────────────────────────────────────────────
 function go(id){
-  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("on",["r1","r2","all","att"][i]===id));
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
-  document.getElementById("p-"+id).classList.add("on");
-  hideSwapPicker();
+  activeTab=id;
+  activateTab(id);
+}
+
+function activateTab(id){
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.toggle("on", t.dataset.tab===id);
+  });
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+  const target=document.getElementById("p-"+id);
+  if(target) target.classList.add("on");
 }
 
 function toast(msg){
@@ -596,6 +637,7 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"),2200);
 }
 
+// ── Init ──────────────────────────────────────────────────────────────
 loadSheet();
 </script>
 </body>
