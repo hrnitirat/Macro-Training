@@ -192,9 +192,12 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
     <div class="org">⚖️ Nitirat Law & Collection — HR</div>
     <h1>อบรม <span>Macro & VBA</span> — ระบบติดตาม</h1>
     <div class="hdr-row2">
-      <div class="live-badge"><div class="dot" id="dot"></div><span id="liveStatus">กำลังโหลด...</span></div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+        <div class="live-badge"><div class="dot" id="dot"></div><span id="liveStatus">กำลังโหลด...</span></div>
+        <div class="live-badge" id="countdownBadge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)">🔄 60s</div>
+      </div>
       <div class="hdr-actions">
-        <button class="hdr-btn" onclick="loadSheet()">🔄 Refresh</button>
+        <button class="hdr-btn" onclick="loadSheet();startAutoRefresh()">🔄 Refresh</button>
         <button class="hdr-btn" onclick="go('settings')">⚙️ ตั้งค่า</button>
       </div>
     </div>
@@ -637,8 +640,33 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"),2200);
 }
 
+// ── Auto Refresh ─────────────────────────────────────────────────────
+const REFRESH_SEC = 60; // ดึงข้อมูลใหม่ทุก 60 วินาที
+let countdown = REFRESH_SEC;
+let refreshTimer = null;
+let countdownTimer = null;
+
+function startAutoRefresh(){
+  clearInterval(refreshTimer);
+  clearInterval(countdownTimer);
+  countdown = REFRESH_SEC;
+
+  refreshTimer = setInterval(()=>{
+    loadSheet();
+    countdown = REFRESH_SEC;
+  }, REFRESH_SEC * 1000);
+
+  countdownTimer = setInterval(()=>{
+    countdown--;
+    const el = document.getElementById("countdownBadge");
+    if(el) el.textContent = `🔄 ${countdown}s`;
+    if(countdown <= 0) countdown = REFRESH_SEC;
+  }, 1000);
+}
+
 // ── Init ──────────────────────────────────────────────────────────────
 loadSheet();
+startAutoRefresh();
 </script>
 </body>
 </html>
