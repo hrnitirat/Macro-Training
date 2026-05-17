@@ -257,9 +257,23 @@ async function loadAttFromAPI(){
   if(!USE_API) return;
   try{
     const res = await apiGet("get");
-    if(res.att)        att        = res.att;
-    if(res.swapMap)    swapMap    = res.swapMap;
+    if(res.att){
+      // Normalize all IDs to 4-digit strings
+      att = {};
+      Object.entries(res.att).forEach(([k,v]) => {
+        att[String(k).padStart(4,"0")] = v;
+      });
+    }
+    if(res.swapMap){
+      swapMap = {};
+      Object.entries(res.swapMap).forEach(([k,v]) => {
+        const key = String(k).padStart(4,"0");
+        if(v && v.id) v.id = String(v.id).padStart(4,"0");
+        swapMap[key] = v;
+      });
+    }
     if(res.roundDates) roundDates = res.roundDates;
+    saveLocal(); // sync to localStorage as backup
   }catch(e){ console.warn("API load failed, using localStorage", e); }
 }
 
@@ -324,10 +338,18 @@ const FALLBACK=[
 ];
 
 function fmtTime(ts){
+  if(!ts) return "";
   try{
-    const m=ts.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
-    if(!m)return ts;
-    const mo=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    // Handle gviz format: "Date(2026,3,20,8,59,13)" (month is 0-indexed)
+    const gv = String(ts).match(/Date\((\d+),(\d+),(\d+),(\d+),(\d+)/);
+    if(gv){
+      const mo=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+      return `${gv[3]} ${mo[+gv[2]]} ${String(gv[4]).padStart(2,"0")}:${String(gv[5]).padStart(2,"0")}`;
+    }
+    // Handle MM/DD/YYYY HH:MM
+    const m = String(ts).match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
+    if(!m) return ts;
+    const mo=["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","พ.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
     return `${m[2]} ${mo[+m[1]]} ${m[4]}:${m[5]}`;
   }catch(e){return ts;}
 }
