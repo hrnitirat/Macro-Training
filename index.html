@@ -232,9 +232,24 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwiJCa7z0F5PRBQ8Tz9IUQP
 const USE_API = API_URL !== "";  // true = ใช้ Sheets API, false = ใช้ localStorage
 
 // ── State ────────────────────────────────────────────────────────────
-let allData = [];
-let att     = JSON.parse(localStorage.getItem("att3_r1")   || "{}");
-let swapMap = JSON.parse(localStorage.getItem("swap3_r1")  || "{}");
+let allData          = [];
+let allAtt           = JSON.parse(localStorage.getItem("allAtt_v2")     || "{}");
+let allSwapMap       = JSON.parse(localStorage.getItem("allSwapMap_v2") || "{}");
+let selectedAttRound = 1;
+
+// Migrate legacy R1 data
+(function(){
+  const a = localStorage.getItem("att3_r1");
+  const s = localStorage.getItem("swap3_r1");
+  if(a && !allAtt["1"])     allAtt["1"]     = JSON.parse(a);
+  if(s && !allSwapMap["1"]) allSwapMap["1"] = JSON.parse(s);
+})();
+
+function attFor(r)           { return allAtt[r]     || {}; }
+function swapMapFor(r)       { return allSwapMap[r] || {}; }
+function toggleAttEntry(r,id,val){ if(!allAtt[r]) allAtt[r]={}; if(val===null) delete allAtt[r][id]; else allAtt[r][id]=val; }
+function setSwapEntry(r,id,p){ if(!allSwapMap[r]) allSwapMap[r]={}; allSwapMap[r][id]=p; }
+function delSwapEntry(r,id)  { if(allSwapMap[r]) delete allSwapMap[r][id]; }
 let roundDates = JSON.parse(localStorage.getItem("roundDates") || JSON.stringify({
   1: { date: "วันเสาร์ที่ 25 เมษายน 2569",     meta: "09.30–15.00 น. · ห้องประชุม 1 · วิทยากร: ทีม HR นิติรัฐ" },
   2: { date: "วันพฤหัสบดีที่ 15 พฤษภาคม 2569", meta: "09.30–15.00 น. · ห้องประชุม 1" },
@@ -257,30 +272,43 @@ async function loadAttFromAPI(){
   if(!USE_API) return;
   try{
     const res = await apiGet("get");
-    if(res.att){
-      // Normalize all IDs to 4-digit strings
-      att = {};
-      Object.entries(res.att).forEach(([k,v]) => {
-        att[String(k).padStart(4,"0")] = v;
+    if(res.allAtt){
+      allAtt = {};
+      Object.entries(res.allAtt).forEach(([r,rd])=>{
+        allAtt[r]={};
+        Object.entries(rd).forEach(([k,v])=>{ allAtt[r][String(k).padStart(4,"0")]=v; });
       });
+    } else if(res.att){ // backward compat
+      allAtt["1"]={};
+      Object.entries(res.att).forEach(([k,v])=>{ allAtt["1"][String(k).padStart(4,"0")]=v; });
     }
-    if(res.swapMap){
-      swapMap = {};
-      Object.entries(res.swapMap).forEach(([k,v]) => {
-        const key = String(k).padStart(4,"0");
-        if(v && v.id) v.id = String(v.id).padStart(4,"0");
-        swapMap[key] = v;
+    if(res.allSwapMap){
+      allSwapMap={};
+      Object.entries(res.allSwapMap).forEach(([r,rd])=>{
+        allSwapMap[r]={};
+        Object.entries(rd).forEach(([k,v])=>{
+          const key=String(k).padStart(4,"0");
+          if(v&&v.id) v.id=String(v.id).padStart(4,"0");
+          allSwapMap[r][key]=v;
+        });
+      });
+    } else if(res.swapMap){ // backward compat
+      allSwapMap["1"]={};
+      Object.entries(res.swapMap).forEach(([k,v])=>{
+        const key=String(k).padStart(4,"0");
+        if(v&&v.id) v.id=String(v.id).padStart(4,"0");
+        allSwapMap["1"][key]=v;
       });
     }
     if(res.roundDates) roundDates = res.roundDates;
-    saveLocal(); // sync to localStorage as backup
+    saveLocal();
   }catch(e){ console.warn("API load failed, using localStorage", e); }
 }
 
 async function saveToAPI(){
   if(!USE_API){ saveLocal(); return; }
   try{
-    await apiGet("setAtt",   { att, swapMap });
+    await apiGet("setAtt",   { allAtt, allSwapMap });
     await apiGet("setDates", roundDates);
     saveLocal(); // backup ใน localStorage ด้วยเสมอ
   }catch(e){
@@ -291,9 +319,9 @@ async function saveToAPI(){
 }
 
 function saveLocal(){
-  localStorage.setItem("att3_r1",   JSON.stringify(att));
-  localStorage.setItem("swap3_r1",  JSON.stringify(swapMap));
-  localStorage.setItem("roundDates",JSON.stringify(roundDates));
+  localStorage.setItem("allAtt_v2",     JSON.stringify(allAtt));
+  localStorage.setItem("allSwapMap_v2", JSON.stringify(allSwapMap));
+  localStorage.setItem("roundDates",    JSON.stringify(roundDates));
 }
 
 // ── Round colors ─────────────────────────────────────────────────────
@@ -386,8 +414,10 @@ function buildUI(){
   const r2eff = getR2Effective();
 
   // Stats
-  const present = Object.values(att).filter(v=>v==="yes").length;
-  const swaps   = Object.keys(swapMap).length;
+  const curAtt  = attFor(selectedAttRound);
+  const curSwap = swapMapFor(selectedAttRound);
+  const present = Object.values(curAtt).filter(v=>v==="yes").length;
+  const swaps   = Object.keys(curSwap).length;
   document.getElementById("sTotal").textContent  = allData.length;
   document.getElementById("sRounds").textContent = n;
   document.getElementById("sR1Att").textContent  = (present+swaps)||"—";
@@ -504,44 +534,66 @@ function mkCard(p, rank, cls, tagHtml, delay=0){
 
 // ── Att panel ─────────────────────────────────────────────────────────
 function buildAttPanel(){
-  const r1 = roundSlice(1);
-  const present = r1.filter(p=>att[p.id]==="yes").length;
-  const swaps   = Object.keys(swapMap).length;
+  const n       = numRounds();
+  const rSlice  = selectedAttRound===2 ? getR2Effective() : roundSlice(selectedAttRound);
+  const curAtt  = attFor(selectedAttRound);
+  const curSwap = swapMapFor(selectedAttRound);
+  const present = rSlice.filter(p=>curAtt[p.id]==="yes").length;
+  const swaps   = Object.keys(curSwap).length;
   const total   = present+swaps;
+  const col     = ROUND_COLORS[Math.min(selectedAttRound-1,3)];
 
   let html = "";
 
-  // Summary
+  // ── Round selector ───────────────────────────────────────────────
+  html += `<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem;align-items:center">
+    <span style="font-size:.74rem;color:var(--muted);font-weight:600">เช็คชื่อรุ่น:</span>`;
+  for(let r=1;r<=n;r++){
+    const rA   = attFor(r);
+    const rS   = swapMapFor(r);
+    const cnt  = Object.values(rA).filter(v=>v==="yes").length + Object.keys(rS).length;
+    const rsz  = r===2 ? getR2Effective().length : roundSlice(r).length;
+    const on   = r===selectedAttRound;
+    html += `<button onclick="selectAttRound(${r})" style="
+      padding:.42rem .95rem;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;
+      border:2px solid ${on?"transparent":"var(--border)"};
+      background:${on?"var(--dg)":"#fff"};color:${on?"#fff":"var(--muted)"};
+      font-family:'Sarabun',sans-serif;transition:all .15s">
+      รุ่น ${r}${cnt>0?` <span style="background:${on?"rgba(255,255,255,.22)":"var(--mint2)"};padding:1px 6px;border-radius:9px;font-size:.65rem">${cnt}/${rsz}</span>`:""}
+    </button>`;
+  }
+  html += `</div>`;
+
+  // ── Summary ──────────────────────────────────────────────────────
   if(total>0){
     html += `<div class="sum-box">
-      <div class="sum-title">📊 สรุปการเข้าร่วม รุ่น 1</div>
+      <div class="sum-title">📊 สรุปการเข้าร่วมจริง รุ่น ${selectedAttRound}</div>
       <div class="sum-row"><div class="sum-dot" style="background:var(--mg)"></div><span>เข้าร่วม: <strong>${present} คน</strong></span></div>
       ${swaps?`<div class="sum-row"><div class="sum-dot" style="background:var(--orange)"></div><span>สลับตัว: <strong>${swaps} คู่</strong></span></div>`:""}
       <div class="sum-row" style="border-top:1px solid var(--mint2);margin-top:.3rem;padding-top:.3rem">
         <div class="sum-dot" style="background:var(--dg)"></div>
-        <span>รวมเข้าร่วมจริง: <strong>${total} / ${ROUND_SIZE} คน</strong></span>
+        <span>รวม: <strong>${total} / ${rSlice.length} คน</strong></span>
       </div>
     </div>`;
   }
 
-  html += `<div class="sh"><span class="sbadge sb-g">เช็คชื่อ รุ่น 1</span>
-    <span style="font-size:.7rem;color:var(--muted)">✓ มา &nbsp;|&nbsp; ↔ สลับกับคนในรุ่น 2</span>
+  html += `<div class="sh"><span class="sbadge ${col.badge}">เช็คชื่อ รุ่น ${selectedAttRound}</span>
+    <span style="font-size:.7rem;color:var(--muted)">✓ มา &nbsp;|&nbsp; ↔ สลับกับคนรุ่นถัดไป</span>
   </div>`;
 
-  // Each R1 person
-  r1.forEach((p,i)=>{
-    const st   = att[p.id];
-    const swap = swapMap[p.id];
+  // ── แถวแต่ละคน ───────────────────────────────────────────────────
+  rSlice.forEach((p,i)=>{
+    const st   = curAtt[p.id];
+    const swap = curSwap[p.id];
     const isYes  = st==="yes";
     const isSwap = st==="swapped";
     const rowCls = isYes?"r1":isSwap?"moved-down":"r1";
-    let stTag = "";
-    if(isYes)  stTag = `<div class="tag t-pres">✓ มา</div>`;
-    if(isSwap) stTag = swap
-      ? `<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">ไม่มา → ${swap.nick} แทน</div>`
-      : `<div class="tag" style="background:var(--rbg);color:var(--red);font-size:.6rem">ไม่มา — รอเลือกผู้แทน</div>`;
-
-    html += `<div class="card ${rowCls}" style="animation-delay:${i*.05}s">
+    let stTag="";
+    if(isYes)  stTag=`<div class="tag t-pres">✓ มา</div>`;
+    if(isSwap) stTag=swap
+      ?`<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">ไม่มา → ${swap.nick} แทน</div>`
+      :`<div class="tag" style="background:var(--rbg);color:var(--red);font-size:.6rem">ไม่มา — รอเลือกผู้แทน</div>`;
+    html+=`<div class="card ${rowCls}" style="animation-delay:${i*.05}s">
       <div class="rank">${i+1}</div>
       <div class="ava">${p.name.charAt(0)}</div>
       <div class="ci"><div class="cn">${p.name}</div><div class="ck">${p.nick}</div>${stTag}</div>
@@ -554,11 +606,11 @@ function buildAttPanel(){
     <div id="picker-${p.id}" style="margin-left:1rem"></div>`;
   });
 
-  // Swap-ups
-  if(Object.keys(swapMap).length){
-    html += `<div style="margin:.65rem 0 .3rem;font-size:.72rem;font-weight:700;color:var(--orange)">🔄 ขยับขึ้นจากรุ่น 2</div>`;
-    Object.entries(swapMap).forEach(([r1Id,r2p])=>{
-      html += `<div class="card swapped-up" style="display:flex;align-items:center">
+  // ── Swap-ups ──────────────────────────────────────────────────────
+  if(Object.keys(curSwap).length){
+    html+=`<div style="margin:.65rem 0 .3rem;font-size:.72rem;font-weight:700;color:var(--orange)">🔄 ขยับขึ้นจากรุ่น ${selectedAttRound+1}</div>`;
+    Object.entries(curSwap).forEach(([r1Id,r2p])=>{
+      html+=`<div class="card swapped-up" style="display:flex;align-items:center">
         <div class="rank">↑</div>
         <div class="ava">${r2p.name.charAt(0)}</div>
         <div class="ci"><div class="cn">${r2p.name}</div><div class="ck">${r2p.nick} · แทน ${getR1Nick(r1Id)}</div></div>
@@ -568,9 +620,9 @@ function buildAttPanel(){
     });
   }
 
-  html += `<div style="display:flex;gap:.5rem;margin-top:.85rem;flex-wrap:wrap">
+  html+=`<div style="display:flex;gap:.5rem;margin-top:.85rem;flex-wrap:wrap">
     <button onclick="saveAll()" style="padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;background:var(--dg);color:#fff;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600">💾 บันทึก</button>
-    <button onclick="if(confirm('Reset การเช็คชื่อทั้งหมด?')){att={};swapMap={};saveAll();buildUI();toast('Reset แล้ว')}" style="padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;background:var(--rbg);color:var(--red);font-family:'Sarabun',sans-serif;font-size:.78rem;font-weight:600">🔄 Reset</button>
+    <button onclick="if(confirm('Reset การเช็คชื่อรุ่น ${selectedAttRound}?')){if(allAtt[selectedAttRound])delete allAtt[selectedAttRound];if(allSwapMap[selectedAttRound])delete allSwapMap[selectedAttRound];saveAll();buildUI();activateTab('att');toast('Reset รุ่น ${selectedAttRound} แล้ว')}" style="padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;background:var(--rbg);color:var(--red);font-family:'Sarabun',sans-serif;font-size:.78rem;font-weight:600">🔄 Reset รุ่น ${selectedAttRound}</button>
   </div>`;
   return html;
 }
@@ -637,32 +689,35 @@ function saveSettings(maxR){
 
 // ── Att actions ───────────────────────────────────────────────────────
 function markYes(id){
-  att[id]="yes"; delete swapMap[id]; pendingSwapFor=null;
+  toggleAttEntry(selectedAttRound,id,"yes"); delSwapEntry(selectedAttRound,id); pendingSwapFor=null;
   saveAll(); buildUI(); activateTab("att");
 }
 
 function markSwap(id){
-  att[id]="swapped"; pendingSwapFor=id;
+  toggleAttEntry(selectedAttRound,id,"swapped"); pendingSwapFor=id;
   saveAll(); buildUI(); activateTab("att");
   renderPickerInline(id);
 }
 
 function clearAtt(id){
-  delete att[id]; delete swapMap[id]; pendingSwapFor=null;
+  toggleAttEntry(selectedAttRound,id,null); delSwapEntry(selectedAttRound,id); pendingSwapFor=null;
   saveAll(); buildUI(); activateTab("att");
 }
 
 function removeSwapUp(r1Id){
-  delete swapMap[r1Id];
+  delSwapEntry(selectedAttRound,r1Id);
   saveAll(); buildUI(); activateTab("att");
 }
 
 function renderPickerInline(r1Id){
   const el = document.getElementById("picker-"+r1Id);
   if(!el) return;
-  const swapUpIds = new Set(Object.entries(swapMap).filter(([k])=>k!==r1Id).map(([,v])=>v.id));
-  const r2avail  = roundSlice(2).filter(p=>!swapUpIds.has(p.id));
-  const r1Nick   = getR1Nick(r1Id);
+  const curSwap   = swapMapFor(selectedAttRound);
+  const nextRound = selectedAttRound+1;
+  const swapUpIds = new Set(Object.entries(curSwap).filter(([k])=>k!==r1Id).map(([,v])=>v&&v.id).filter(Boolean));
+  const nextPool  = nextRound===2 ? getR2Effective() : roundSlice(nextRound);
+  const r2avail   = nextPool.filter(p=>!swapUpIds.has(p.id));
+  const r1Nick    = getR1Nick(r1Id);
 
   const opts = r2avail.map((p,i)=>`
     <div class="swap-option" onclick="confirmSwap('${r1Id}','${p.id}')">
@@ -687,14 +742,15 @@ function closePickerOnly(r1Id){
 function confirmSwap(r1Id, r2Id){
   const r2p = allData.find(p=>p.id===r2Id);
   if(!r2p) return;
-  swapMap[r1Id]={...r2p};
+  setSwapEntry(selectedAttRound,r1Id,{...r2p});
   pendingSwapFor=null;
   saveAll(); buildUI(); activateTab("att");
   toast(`↔ ${getR1Nick(r1Id)} ⇄ ${r2p.nick}`);
 }
 
 function getR1Nick(id){
-  const p=roundSlice(1).find(x=>x.id===id);
+  const src = selectedAttRound===2 ? getR2Effective() : roundSlice(selectedAttRound);
+  const p   = src.find(x=>x.id===id);
   return p?(p.nick||p.name):id;
 }
 
@@ -732,6 +788,11 @@ function saveApiUrl(){
     // inject the URL into the page constant by reloading
     window.location.reload();
   }, 1200);
+}
+
+function selectAttRound(r){
+  selectedAttRound=r; pendingSwapFor=null;
+  buildUI(); activateTab("att");
 }
 
 function toast(msg){
