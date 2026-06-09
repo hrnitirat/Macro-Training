@@ -337,11 +337,12 @@ function numRounds(){ return Math.max(1, Math.ceil(allData.length / ROUND_SIZE))
 function roundSlice(r){ return allData.slice((r-1)*ROUND_SIZE, r*ROUND_SIZE); }
 
 function getR2Effective(){
-  // For round 2: original R2 people + R1 no-shows; minus swap-ups
-  const r1 = roundSlice(1);
-  const r2orig = roundSlice(2);
-  const swapUpIds = new Set(Object.values(swapMap).map(v=>v.id));
-  const movedDown = r1.filter(p => att[p.id]==="swapped");
+  const r1        = roundSlice(1);
+  const r2orig    = roundSlice(2);
+  const att1      = attFor(1);
+  const swap1     = swapMapFor(1);
+  const swapUpIds = new Set(Object.values(swap1).map(v=>v&&v.id).filter(Boolean));
+  const movedDown = r1.filter(p => att1[p.id]==="swapped");
   return [
     ...movedDown.map(p=>({...p, movedFrom:"r1"})),
     ...r2orig.filter(p=>!swapUpIds.has(p.id))
