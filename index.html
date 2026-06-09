@@ -273,35 +273,49 @@ async function loadAttFromAPI(){
   if(!USE_API) return;
   try{
     const res = await apiGet("get");
-    if(res.allAtt){
-      allAtt = {};
+
+    // ── allAtt ──────────────────────────────────────────────────────
+    if(res.allAtt && Object.keys(res.allAtt).length > 0){
+      const fresh = {};
       Object.entries(res.allAtt).forEach(([r,rd])=>{
-        allAtt[r]={};
-        Object.entries(rd).forEach(([k,v])=>{ allAtt[r][String(k).padStart(4,"0")]=v; });
+        if(!rd || !Object.keys(rd).length) return; // skip empty rounds
+        fresh[r]={};
+        Object.entries(rd).forEach(([k,v])=>{ fresh[r][String(k).padStart(4,"0")]=v; });
       });
-    } else if(res.att){ // backward compat
-      allAtt["1"]={};
-      Object.entries(res.att).forEach(([k,v])=>{ allAtt["1"][String(k).padStart(4,"0")]=v; });
+      // Only overwrite if API actually has data (prevent blank reset)
+      if(Object.keys(fresh).length > 0) allAtt = fresh;
+    } else if(res.att && Object.keys(res.att).length > 0){ // backward compat
+      const fresh = {};
+      Object.entries(res.att).forEach(([k,v])=>{ fresh[String(k).padStart(4,"0")]=v; });
+      if(Object.keys(fresh).length > 0) allAtt["1"] = fresh;
     }
-    if(res.allSwapMap){
-      allSwapMap={};
+
+    // ── allSwapMap ──────────────────────────────────────────────────
+    if(res.allSwapMap && Object.keys(res.allSwapMap).length > 0){
+      const fresh = {};
       Object.entries(res.allSwapMap).forEach(([r,rd])=>{
-        allSwapMap[r]={};
+        if(!rd || !Object.keys(rd).length) return;
+        fresh[r]={};
         Object.entries(rd).forEach(([k,v])=>{
           const key=String(k).padStart(4,"0");
           if(v&&v.id) v.id=String(v.id).padStart(4,"0");
-          allSwapMap[r][key]=v;
+          fresh[r][key]=v;
         });
       });
-    } else if(res.swapMap){ // backward compat
-      allSwapMap["1"]={};
+      if(Object.keys(fresh).length > 0) allSwapMap = fresh;
+    } else if(res.swapMap && Object.keys(res.swapMap).length > 0){
+      const fresh = {};
       Object.entries(res.swapMap).forEach(([k,v])=>{
         const key=String(k).padStart(4,"0");
         if(v&&v.id) v.id=String(v.id).padStart(4,"0");
-        allSwapMap["1"][key]=v;
+        fresh[key]=v;
       });
+      if(Object.keys(fresh).length > 0) allSwapMap["1"] = fresh;
     }
-    if(res.roundDates) roundDates = res.roundDates;
+
+    if(res.roundDates && Object.keys(res.roundDates).length > 0)
+      roundDates = res.roundDates;
+
     saveLocal();
   }catch(e){ console.warn("API load failed, using localStorage", e); }
 }
@@ -355,18 +369,32 @@ function removeLastRound(){
 }
 function roundSlice(r){ return allData.slice((r-1)*ROUND_SIZE, r*ROUND_SIZE); }
 
-function getR2Effective(){
-  const r1        = roundSlice(1);
-  const r2orig    = roundSlice(2);
-  const att1      = attFor(1);
-  const swap1     = swapMapFor(1);
-  const swapUpIds = new Set(Object.values(swap1).map(v=>v&&v.id).filter(Boolean));
-  const movedDown = r1.filter(p => att1[p.id]==="swapped");
+// รายชื่อจริงในรุ่น r (รวมคนที่ย้ายมาจากรุ่นก่อน + ลบคนที่ขยับขึ้นรุ่นก่อน)
+function getRoundEffective(r){
+  const prevRound = r - 1;
+  const base      = roundSlice(r);
+  if(prevRound < 1) return base; // รุ่น 1 ไม่มีคนย้ายมา
+
+  const prevAtt     = attFor(prevRound);
+  const prevSwapMap = swapMapFor(prevRound);
+
+  // คนที่ขยับขึ้นจากรุ่นนี้ไปรุ่นก่อนแล้ว → ต้องเอาออก
+  const swapUpIds = new Set(
+    Object.values(prevSwapMap).map(v=>v&&v.id).filter(Boolean)
+  );
+
+  // คนรุ่นก่อนที่ไม่มา → ย้ายลงมารุ่นนี้ (อยู่ต้นคิว)
+  const movedDown = roundSlice(prevRound)
+    .filter(p => prevAtt[p.id]==="swapped")
+    .map(p => ({...p, movedFrom: prevRound}));
+
   return [
-    ...movedDown.map(p=>({...p, movedFrom:"r1"})),
-    ...r2orig.filter(p=>!swapUpIds.has(p.id))
+    ...movedDown,
+    ...base.filter(p => !swapUpIds.has(p.id))
   ];
 }
+// Backward compat alias
+function getR2Effective(){ return getRoundEffective(2); }
 
 // ── Fallback ──────────────────────────────────────────────────────────
 const FALLBACK=[
@@ -431,7 +459,6 @@ function setStatus(s,msg){
 // ── Build dynamic UI ──────────────────────────────────────────────────
 function buildUI(){
   const n = numRounds();
-  const r2eff = getR2Effective();
 
   // Stats
   const curAtt  = attFor(selectedAttRound);
@@ -454,7 +481,7 @@ function buildUI(){
   buildTabs(n);
 
   // Build panels
-  buildPanels(n, r2eff);
+  buildPanels(n);
 
   // Activate current tab
   activateTab(activeTab);
@@ -475,12 +502,12 @@ function buildTabs(n){
 }
 
 // ── Panels ────────────────────────────────────────────────────────────
-function buildPanels(n, r2eff){
+function buildPanels(n){
   const mc = document.getElementById("mainContent");
   let html = "";
 
   for(let r=1;r<=n;r++){
-    const data = r===2 ? r2eff : roundSlice(r);
+    const data = r > 1 ? getRoundEffective(r) : roundSlice(r);
     const col  = ROUND_COLORS[Math.min(r-1,3)];
     const cfg  = roundDates[r] || {date:"ยังไม่กำหนดวันที่",meta:"09.30–15.00 น. · ห้องประชุม 1"};
     const pct  = Math.min(100, Math.round(data.length/ROUND_SIZE*100));
@@ -554,7 +581,7 @@ function mkCard(p, rank, cls, tagHtml, delay=0){
 // ── Att panel ─────────────────────────────────────────────────────────
 function buildAttPanel(){
   const n       = numRounds();
-  const rSlice  = selectedAttRound===2 ? getR2Effective() : roundSlice(selectedAttRound);
+  const rSlice  = selectedAttRound > 1 ? getRoundEffective(selectedAttRound) : roundSlice(selectedAttRound);
   const curAtt  = attFor(selectedAttRound);
   const curSwap = swapMapFor(selectedAttRound);
   const present = rSlice.filter(p=>curAtt[p.id]==="yes").length;
@@ -571,7 +598,7 @@ function buildAttPanel(){
     const rA   = attFor(r);
     const rS   = swapMapFor(r);
     const cnt  = Object.values(rA).filter(v=>v==="yes").length + Object.keys(rS).length;
-    const rsz  = r===2 ? getR2Effective().length : roundSlice(r).length;
+    const rsz  = r > 1 ? getRoundEffective(r).length : roundSlice(r).length;
     const on   = r===selectedAttRound;
     html += `<button onclick="selectAttRound(${r})" style="
       padding:.42rem .95rem;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;
@@ -738,7 +765,7 @@ function renderPickerInline(r1Id){
   const curSwap   = swapMapFor(selectedAttRound);
   const nextRound = selectedAttRound+1;
   const swapUpIds = new Set(Object.entries(curSwap).filter(([k])=>k!==r1Id).map(([,v])=>v&&v.id).filter(Boolean));
-  const nextPool  = nextRound===2 ? getR2Effective() : roundSlice(nextRound);
+  const nextPool  = nextRound > 1 ? getRoundEffective(nextRound) : roundSlice(nextRound);
   const r2avail   = nextPool.filter(p=>!swapUpIds.has(p.id));
   const r1Nick    = getR1Nick(r1Id);
 
