@@ -133,7 +133,9 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
 .att-btn.yes:not(.active):hover{background:var(--mint2);border-color:var(--mg);color:var(--mg);}
 .att-btn.swap.active{background:var(--orange);border-color:var(--orange);color:#fff;}
 .att-btn.swap:not(.active){background:var(--obg);border-color:var(--orange);color:var(--orange);}
-.att-btn.clr{background:var(--rbg);border-color:var(--red);color:var(--red);font-size:.68rem;}
+.att-btn.absent{background:var(--rbg);border-color:var(--red);color:var(--red);}
+.att-btn.absent.active{background:var(--red);border-color:var(--red);color:#fff;}
+.att-btn.clr{background:#F5F5F5;border-color:#ccc;color:#9E9E9E;font-size:.68rem;}
 
 /* ── Swap picker ── */
 .swap-sel{background:#fff;border:2px solid var(--orange);border-radius:10px;padding:.8rem 1rem;margin:.3rem 0 .5rem 2rem;box-shadow:0 4px 18px rgba(0,0,0,.1);}
@@ -385,7 +387,7 @@ function getRoundEffective(r){
 
   // คนรุ่นก่อนที่ไม่มา → ย้ายลงมารุ่นนี้ (อยู่ต้นคิว)
   const movedDown = roundSlice(prevRound)
-    .filter(p => prevAtt[p.id]==="swapped")
+    .filter(p => prevAtt[p.id]==="swapped" || prevAtt[p.id]==="absent")
     .map(p => ({...p, movedFrom: prevRound}));
 
   return [
@@ -464,10 +466,11 @@ function buildUI(){
   const curAtt  = attFor(selectedAttRound);
   const curSwap = swapMapFor(selectedAttRound);
   const present = Object.values(curAtt).filter(v=>v==="yes").length;
+  const absentCnt = Object.values(curAtt).filter(v=>v==="absent").length;
   const swaps   = Object.keys(curSwap).length;
   document.getElementById("sTotal").textContent  = allData.length;
   document.getElementById("sRounds").textContent = n;
-  document.getElementById("sR1Att").textContent  = (present+swaps)||"—";
+  document.getElementById("sR1Att").textContent  = (present+swaps)||(absentCnt?`✗${absentCnt}`)||"—";
   document.getElementById("sSwaps").textContent  = swaps||"—";
 
   // Floating badge
@@ -485,6 +488,11 @@ function buildUI(){
 
   // Activate current tab
   activateTab(activeTab);
+
+  // Re-render picker หลัง DOM พร้อม
+  if(pendingSwapFor){
+    setTimeout(()=>{ renderPickerInline(pendingSwapFor); }, 0);
+  }
 }
 
 // ── Tabs ──────────────────────────────────────────────────────────────
@@ -585,6 +593,7 @@ function buildAttPanel(){
   const curAtt  = attFor(selectedAttRound);
   const curSwap = swapMapFor(selectedAttRound);
   const present = rSlice.filter(p=>curAtt[p.id]==="yes").length;
+  const absent  = rSlice.filter(p=>curAtt[p.id]==="absent").length;
   const swaps   = Object.keys(curSwap).length;
   const total   = present+swaps;
   const col     = ROUND_COLORS[Math.min(selectedAttRound-1,3)];
@@ -597,7 +606,7 @@ function buildAttPanel(){
   for(let r=1;r<=n;r++){
     const rA   = attFor(r);
     const rS   = swapMapFor(r);
-    const cnt  = Object.values(rA).filter(v=>v==="yes").length + Object.keys(rS).length;
+    const cnt  = Object.values(rA).filter(v=>v==="yes"||v==="absent").length + Object.keys(rS).length;
     const rsz  = r > 1 ? getRoundEffective(r).length : roundSlice(r).length;
     const on   = r===selectedAttRound;
     html += `<button onclick="selectAttRound(${r})" style="
@@ -615,6 +624,7 @@ function buildAttPanel(){
     html += `<div class="sum-box">
       <div class="sum-title">📊 สรุปการเข้าร่วมจริง รุ่น ${selectedAttRound}</div>
       <div class="sum-row"><div class="sum-dot" style="background:var(--mg)"></div><span>เข้าร่วม: <strong>${present} คน</strong></span></div>
+      ${absent?`<div class="sum-row"><div class="sum-dot" style="background:var(--red)"></div><span>ไม่มา (ย้ายรุ่นถัดไป): <strong>${absent} คน</strong></span></div>`:""}
       ${swaps?`<div class="sum-row"><div class="sum-dot" style="background:var(--orange)"></div><span>สลับตัว: <strong>${swaps} คู่</strong></span></div>`:""}
       <div class="sum-row" style="border-top:1px solid var(--mint2);margin-top:.3rem;padding-top:.3rem">
         <div class="sum-dot" style="background:var(--dg)"></div>
@@ -631,22 +641,25 @@ function buildAttPanel(){
   rSlice.forEach((p,i)=>{
     const st   = curAtt[p.id];
     const swap = curSwap[p.id];
-    const isYes  = st==="yes";
-    const isSwap = st==="swapped";
-    const rowCls = isYes?"r1":isSwap?"moved-down":"r1";
+    const isYes    = st==="yes";
+    const isAbsent = st==="absent";
+    const isSwap   = st==="swapped";
+    const rowCls   = isYes?"r1":( isAbsent||isSwap )?"moved-down":"r1";
     let stTag="";
-    if(isYes)  stTag=`<div class="tag t-pres">✓ มา</div>`;
-    if(isSwap) stTag=swap
-      ?`<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">ไม่มา → ${swap.nick} แทน</div>`
-      :`<div class="tag" style="background:var(--rbg);color:var(--red);font-size:.6rem">ไม่มา — รอเลือกผู้แทน</div>`;
+    if(isYes)    stTag=`<div class="tag t-pres">✓ มา</div>`;
+    if(isAbsent) stTag=`<div class="tag" style="background:var(--rbg);color:var(--red);font-size:.6rem">✗ ไม่มา → รุ่นถัดไป</div>`;
+    if(isSwap)   stTag=swap
+      ?`<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">↔ สลับกับ ${swap.nick}</div>`
+      :`<div class="tag" style="background:var(--obg);color:var(--orange);font-size:.6rem">↔ รอเลือกผู้แทน</div>`;
     html+=`<div class="card ${rowCls}" style="animation-delay:${i*.05}s">
       <div class="rank">${i+1}</div>
       <div class="ava">${p.name.charAt(0)}</div>
       <div class="ci"><div class="cn">${p.name}</div><div class="ck">${p.nick}</div>${stTag}</div>
       <div class="att-btns">
         <button class="att-btn yes ${isYes?"active":""}" onclick="markYes('${p.id}')">✓ มา</button>
+        <button class="att-btn absent ${isAbsent?"active":""}" onclick="markAbsent('${p.id}')">✗ ไม่มา</button>
         <button class="att-btn swap ${isSwap?"active":""}" onclick="markSwap('${p.id}')">↔ สลับ</button>
-        ${(isYes||isSwap)?`<button class="att-btn clr" onclick="clearAtt('${p.id}')">✕</button>`:""}
+        ${(isYes||isAbsent||isSwap)?`<button class="att-btn clr" onclick="clearAtt('${p.id}')">↺</button>`:""}
       </div>
     </div>
     <div id="picker-${p.id}" style="margin-left:1rem"></div>`;
@@ -761,11 +774,12 @@ function removeSwapUp(r1Id){
 
 function renderPickerInline(r1Id){
   const el = document.getElementById("picker-"+r1Id);
-  if(!el) return;
+  if(!el){ console.warn("picker not found: picker-"+r1Id); return; }
   const curSwap   = swapMapFor(selectedAttRound);
   const nextRound = selectedAttRound+1;
   const swapUpIds = new Set(Object.entries(curSwap).filter(([k])=>k!==r1Id).map(([,v])=>v&&v.id).filter(Boolean));
-  const nextPool  = nextRound > 1 ? getRoundEffective(nextRound) : roundSlice(nextRound);
+  // ใช้ roundSlice โดยตรง เพื่อให้แน่ใจว่าได้คนในรุ่นถัดไปเท่านั้น
+  const nextPool  = roundSlice(nextRound);
   const r2avail   = nextPool.filter(p=>!swapUpIds.has(p.id));
   const r1Nick    = getR1Nick(r1Id);
 
@@ -793,7 +807,7 @@ function confirmSwap(r1Id, r2Id){
   const r2p = allData.find(p=>p.id===r2Id);
   if(!r2p) return;
   setSwapEntry(selectedAttRound,r1Id,{...r2p});
-  pendingSwapFor=null;
+  pendingSwapFor = null;
   saveAll(); buildUI(); activateTab("att");
   toast(`↔ ${getR1Nick(r1Id)} ⇄ ${r2p.nick}`);
 }
