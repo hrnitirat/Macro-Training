@@ -236,6 +236,7 @@ let allData          = [];
 let allAtt           = JSON.parse(localStorage.getItem("allAtt_v2")     || "{}");
 let allSwapMap       = JSON.parse(localStorage.getItem("allSwapMap_v2") || "{}");
 let selectedAttRound = 1;
+let manualRounds     = parseInt(localStorage.getItem("manualRounds") || "1");
 
 // Migrate legacy R1 data
 (function(){
@@ -322,6 +323,7 @@ function saveLocal(){
   localStorage.setItem("allAtt_v2",     JSON.stringify(allAtt));
   localStorage.setItem("allSwapMap_v2", JSON.stringify(allSwapMap));
   localStorage.setItem("roundDates",    JSON.stringify(roundDates));
+  localStorage.setItem("manualRounds",  String(manualRounds));
 }
 
 // ── Round colors ─────────────────────────────────────────────────────
@@ -333,7 +335,24 @@ const ROUND_COLORS = [
 ];
 
 // ── Computed ─────────────────────────────────────────────────────────
-function numRounds(){ return Math.max(1, Math.ceil(allData.length / ROUND_SIZE)); }
+function numRounds(){ return manualRounds; }
+function addRound(){
+  manualRounds++;
+  localStorage.setItem("manualRounds", manualRounds);
+  buildUI();
+  go("settings");
+  toast(`➕ เพิ่มรุ่น ${manualRounds} แล้ว`);
+}
+function removeLastRound(){
+  if(manualRounds <= 1){ toast("ต้องมีอย่างน้อย 1 รุ่น"); return; }
+  if(!confirm(`ลบรุ่น ${manualRounds} ออก? (ข้อมูลเช็คชื่อรุ่นนี้จะยังอยู่)`)) return;
+  manualRounds--;
+  localStorage.setItem("manualRounds", manualRounds);
+  if(selectedAttRound > manualRounds) selectedAttRound = manualRounds;
+  buildUI();
+  go("settings");
+  toast(`ลบรุ่น ${manualRounds+1} แล้ว`);
+}
 function roundSlice(r){ return allData.slice((r-1)*ROUND_SIZE, r*ROUND_SIZE); }
 
 function getR2Effective(){
@@ -425,8 +444,7 @@ function buildUI(){
   document.getElementById("sSwaps").textContent  = swaps||"—";
 
   // Floating badge
-  const nextOpen = n>1 ? `รุ่น ${n}` : (allData.length>=ROUND_SIZE ? "รุ่น 2" : "รุ่น 1");
-  document.getElementById("floatBadge").textContent = nextOpen;
+  document.getElementById("floatBadge").textContent = `รุ่น ${manualRounds}`;
 
   // Footer
   const now=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
@@ -630,12 +648,13 @@ function buildAttPanel(){
 
 // ── Settings panel ────────────────────────────────────────────────────
 function buildSettingsPanel(n){
-  const maxR = Math.max(n+1, 3); // show at least 3 rounds in settings
+  const maxR = n;
   let rows = "";
   for(let r=1;r<=maxR;r++){
     const cfg = roundDates[r]||{date:"",meta:"09.30–15.00 น. · ห้องประชุม 1"};
+    const attCnt = Object.keys(attFor(r)).length;
     rows += `<div class="round-settings-group">
-      <div class="round-settings-header">รุ่นที่ ${r} ${r<=n?"✅ (มีผู้ลงทะเบียนแล้ว)":"(ยังไม่มีผู้ลงทะเบียน)"}</div>
+      <div class="round-settings-header">รุ่นที่ ${r} ${attCnt>0?"✅ (มีข้อมูลเช็คชื่อแล้ว)":""}</div>
       <div class="settings-row">
         <div class="settings-label">วันที่อบรม</div>
         <input class="settings-input" id="rdate-${r}" placeholder="เช่น วันเสาร์ที่ 25 เมษายน 2569" value="${cfg.date||""}">
@@ -650,7 +669,11 @@ function buildSettingsPanel(n){
   return `<div class="settings-box">
     <div class="settings-title">⚙️ ตั้งค่าวันที่อบรมแต่ละรุ่น</div>
     ${rows}
-    <button class="btn-save-settings" onclick="saveSettings(${maxR})">💾 บันทึกการตั้งค่า</button>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+      <button class="btn-save-settings" onclick="saveSettings(${maxR})">💾 บันทึกการตั้งค่า</button>
+      <button onclick="addRound()" style="padding:.5rem 1.1rem;border-radius:8px;border:1.5px solid var(--mg);background:#fff;color:var(--mg);font-family:'Sarabun',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer">➕ เพิ่มรุ่น ${n+1}</button>
+      ${n>1?`<button onclick="removeLastRound()" style="padding:.5rem 1.1rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:.78rem;cursor:pointer">➖ ลบรุ่น ${n}</button>`:""}
+    </div>
     <div class="divider"></div>
     <div class="round-settings-group">
       <div class="round-settings-header">🔗 Google Apps Script API</div>
@@ -664,13 +687,13 @@ function buildSettingsPanel(n){
         <button class="btn-save-settings" onclick="saveApiUrl()">💾 บันทึก URL</button>
         <div style="font-size:.72rem;color:${USE_API?'var(--mg)':'var(--red)'};display:flex;align-items:center;gap:4px">
           <div style="width:8px;height:8px;border-radius:50%;background:${USE_API?'var(--mg)':'var(--muted)'};flex-shrink:0"></div>
-          ${USE_API ? "✅ ใช้ Apps Script API — ทุกคนเห็นเหมือนกัน" : "⚠️ ยังใช้ localStorage — เฉพาะ browser นี้"}
+          ${USE_API ? "✅ ใช้ Apps Script API" : "⚠️ ยังใช้ localStorage"}
         </div>
       </div>
     </div>
     <div class="settings-note">
-      💡 วันที่จะแสดงในหน้ารุ่นนั้นๆ โดยอัตโนมัติ<br>
-      ระบบจะสร้างรุ่นใหม่เองเมื่อจำนวนผู้ลงทะเบียนเกิน ${ROUND_SIZE} คนต่อรุ่น
+      💡 กด "เพิ่มรุ่น" เมื่อต้องการเปิดรุ่นใหม่ — ระบบจะสร้างแท็บและหน้าเช็คชื่อให้อัตโนมัติ<br>
+      ข้อมูลผู้ลงทะเบียนในแต่ละรุ่นแบ่งตามลำดับ ${ROUND_SIZE} คน/รุ่น
     </div>
   </div>`;
 }
@@ -683,8 +706,7 @@ function saveSettings(maxR){
   }
   saveLocal();
   if(USE_API) saveToAPI().catch(e=>console.warn(e));
-  buildUI();
-  go("settings");
+  buildUI(); go("settings");
   toast("💾 บันทึกการตั้งค่าแล้ว ✓");
 }
 
