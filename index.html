@@ -760,6 +760,13 @@ function markYes(id){
   saveAll(); buildUI(); activateTab("att");
 }
 
+function markAbsent(id){
+  toggleAttEntry(selectedAttRound,id,"absent");
+  delSwapEntry(selectedAttRound,id);
+  if(pendingSwapFor===id) pendingSwapFor=null;
+  saveAll(); buildUI(); activateTab("att");
+}
+
 function markSwap(id){
   if(pendingSwapFor===id){ pendingSwapFor=null; buildUI(); activateTab("att"); return; }
   toggleAttEntry(selectedAttRound,id,"swapped");
