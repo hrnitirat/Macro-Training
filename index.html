@@ -772,31 +772,28 @@ function removeSwapUp(r1Id){
   saveAll(); buildUI(); activateTab("att");
 }
 
-function renderPickerInline(r1Id){
-  const el = document.getElementById("picker-"+r1Id);
-  if(!el){ console.warn("picker not found: picker-"+r1Id); return; }
+// สร้าง picker HTML string — ใช้ตอน build panel (ไม่ต้อง DOM manipulation)
+function buildPickerHTML(r1Id){
   const curSwap   = swapMapFor(selectedAttRound);
   const nextRound = selectedAttRound+1;
   const swapUpIds = new Set(Object.entries(curSwap).filter(([k])=>k!==r1Id).map(([,v])=>v&&v.id).filter(Boolean));
-  // ใช้ roundSlice โดยตรง เพื่อให้แน่ใจว่าได้คนในรุ่นถัดไปเท่านั้น
   const nextPool  = roundSlice(nextRound);
   const r2avail   = nextPool.filter(p=>!swapUpIds.has(p.id));
   const r1Nick    = getR1Nick(r1Id);
-
-  const opts = r2avail.map((p,i)=>`
+  const opts = r2avail.map((p,qi)=>`
     <div class="swap-option" onclick="confirmSwap('${r1Id}','${p.id}')">
       <div class="ava" style="background:linear-gradient(135deg,var(--purple),#9B7EC8);width:27px;height:27px;font-size:.76rem;flex-shrink:0">${p.name.charAt(0)}</div>
-      <div style="flex:1"><div class="swap-opt-name">${p.name}</div><div class="swap-opt-sub">${p.nick} · คิวที่ ${i+1} ในรุ่น 2</div></div>
+      <div style="flex:1"><div class="swap-opt-name">${p.name}</div><div class="swap-opt-sub">${p.nick} · คิวที่ ${qi+1} ในรุ่น ${nextRound}</div></div>
       <div class="swap-go">เลือก →</div>
-    </div>`).join("") || `<div style="color:var(--muted);font-size:.78rem;padding:.4rem">ไม่มีรายชื่อในรุ่น 2</div>`;
-
-  el.innerHTML=`<div class="swap-sel">
-    <div class="swap-sel-title">เลือกคนจากรุ่น 2 มาแทน "${r1Nick}"</div>
+    </div>`).join("") || `<div style="color:var(--muted);font-size:.78rem;padding:.5rem">ไม่มีรายชื่อในรุ่น ${nextRound}</div>`;
+  return `<div class="swap-sel" style="margin:.3rem 0 .5rem 1.5rem">
+    <div class="swap-sel-title">เลือกคนจากรุ่น ${nextRound} มาแทน "${r1Nick}"</div>
     ${opts}
-    <div class="swap-cancel" onclick="closePickerOnly('${r1Id}')">✕ ปิด (ไม่มีผู้แทน)</div>
+    <div class="swap-cancel" onclick="cancelPendingSwap()">✕ ปิด</div>
   </div>`;
-  el.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
+
+function renderPickerInline(r1Id){ /* deprecated — ใช้ buildPickerHTML แทน */ }
 
 function closePickerOnly(r1Id){
   const el=document.getElementById("picker-"+r1Id);
