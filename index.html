@@ -662,7 +662,11 @@ function buildAttPanel(){
         ${(isYes||isAbsent||isSwap)?`<button class="att-btn clr" onclick="clearAtt('${p.id}')">↺</button>`:""}
       </div>
     </div>
-    <div id="picker-${p.id}" style="margin-left:1rem"></div>`;
+`;
+    // Picker inline
+    if(pendingSwapFor===p.id && isSwap && !swap){
+      html += buildPickerHTML(p.id);
+    }
   });
 
   // ── Swap-ups ──────────────────────────────────────────────────────
@@ -757,9 +761,10 @@ function markYes(id){
 }
 
 function markSwap(id){
-  toggleAttEntry(selectedAttRound,id,"swapped"); pendingSwapFor=id;
+  if(pendingSwapFor===id){ pendingSwapFor=null; buildUI(); activateTab("att"); return; }
+  toggleAttEntry(selectedAttRound,id,"swapped");
+  pendingSwapFor=id;
   saveAll(); buildUI(); activateTab("att");
-  renderPickerInline(id);
 }
 
 function clearAtt(id){
