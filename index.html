@@ -386,7 +386,10 @@ function getRoundEffective(r){
   );
 
   // คนรุ่นก่อนที่ไม่มา → ย้ายลงมารุ่นนี้ (อยู่ต้นคิว)
-  const movedDown = roundSlice(prevRound)
+  // ใช้ getRoundEffective(prevRound) ไม่ใช่ roundSlice
+  // เพื่อให้รวมคนที่ "ย้ายมาจากรุ่นก่อนหน้า" ด้วย (multi-hop)
+  const prevEffective = prevRound === 1 ? roundSlice(1) : getRoundEffective(prevRound);
+  const movedDown = prevEffective
     .filter(p => prevAtt[p.id]==="swapped" || prevAtt[p.id]==="absent")
     .map(p => ({...p, movedFrom: prevRound}));
 
