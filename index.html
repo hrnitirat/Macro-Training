@@ -465,12 +465,12 @@ function buildUI(){
   // Stats
   const curAtt  = attFor(selectedAttRound);
   const curSwap = swapMapFor(selectedAttRound);
-  const present = Object.values(curAtt).filter(v=>v==="yes").length;
+  const present   = Object.values(curAtt).filter(v=>v==="yes").length;
   const absentCnt = Object.values(curAtt).filter(v=>v==="absent").length;
-  const swaps   = Object.keys(curSwap).length;
+  const swaps     = Object.keys(curSwap).length;
   document.getElementById("sTotal").textContent  = allData.length;
   document.getElementById("sRounds").textContent = n;
-  document.getElementById("sR1Att").textContent  = (present+swaps)||(absentCnt?`✗${absentCnt}`)||"—";
+  document.getElementById("sR1Att").textContent  = (present+swaps+absentCnt)||"—";
   document.getElementById("sSwaps").textContent  = swaps||"—";
 
   // Floating badge
