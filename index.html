@@ -270,7 +270,7 @@ async function apiGet(action, data){
   const res = await fetch(url, {
     redirect: "follow",
     method:   "GET",
-    headers:  { "Content-Type": "application/json" },
+    // ห้ามใส่ custom headers เพราะจะ trigger CORS preflight ที่ Apps Script ไม่รองรับ
   });
   if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
