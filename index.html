@@ -35,6 +35,17 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
 .hdr-btn:hover{background:rgba(255,255,255,.1);}
 
 /* ── Floating register button ── */
+.search-float{position:fixed;top:84px;right:16px;z-index:200;width:min(300px,calc(100vw - 32px));}
+.search-float input{width:100%;font-family:"Sarabun",sans-serif;font-size:.78rem;
+  padding:8px 13px;border:2px solid var(--sg);border-radius:22px;color:var(--text);
+  box-sizing:border-box;box-shadow:0 3px 14px rgba(0,0,0,.15);background:#fff;outline:none;}
+.search-float input:focus{border-color:var(--mg);}
+.search-float-hint{position:absolute;top:42px;right:0;left:0;background:#fff;
+  border-radius:10px;padding:6px 12px;font-size:.72rem;color:var(--muted);
+  box-shadow:0 3px 14px rgba(0,0,0,.15);}
+@media(max-width:560px){
+  .search-float{top:auto;bottom:14px;right:16px;left:16px;width:auto;}
+}
 .reg-float{position:fixed;top:14px;right:16px;z-index:200;
   display:flex;align-items:center;gap:6px;
   background:#fff;color:var(--dg);text-decoration:none;
@@ -188,6 +199,12 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
   📝 ลงทะเบียน <span class="rbadge" id="floatBadge">รุ่น 2</span>
 </a>
 
+<!-- ── Floating Search (โชว์เฉพาะแท็บทั้งหมด) ── -->
+<div class="search-float" id="searchFloat">
+  <input id="searchBox" type="text" oninput="filterAll(this.value)" placeholder="🔍 ค้นหาชื่อ / รหัส ดูว่าอยู่รุ่นไหน" />
+  <div class="search-float-hint" id="searchHint" style="display:none"></div>
+</div>
+
 <!-- ── Header ── -->
 <div class="hdr">
   <div class="hdr-inner">
@@ -198,10 +215,7 @@ body{font-family:"Sarabun",sans-serif;background:var(--mint);color:var(--text);m
         <div class="live-badge"><div class="dot" id="dot"></div><span id="liveStatus">กำลังโหลด...</span></div>
         <div class="live-badge" id="countdownBadge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)">🔄 60s</div>
       </div>
-      <div class="hdr-actions">
-        <button class="hdr-btn" onclick="loadSheet();startAutoRefresh()">🔄 Refresh</button>
-        <button class="hdr-btn" onclick="go('settings')">⚙️ ตั้งค่า</button>
-      </div>
+      <div class="hdr-actions"></div>
     </div>
   </div>
 </div>
@@ -643,20 +657,19 @@ function buildPanels(n){
     </div>`;
   }
 
-  // All tab — เรียงตามลำดับลงทะเบียน + ค้นหาได้
+  // All tab — ช่องค้นหาบนสุด + สีเดียว (ไม่ไล่สีตามรุ่น) + รุ่นจากข้อมูลจริง
   html += `<div class="panel" id="p-all">
-    <div class="sh"><span class="sbadge sb-g">📋 ทั้งหมด</span><span class="scnt">${allData.length} คน</span></div>
-    <div style="margin-bottom:.7rem">
+    <div style="margin-bottom:.8rem">
       <input id="searchBox" type="text" oninput="filterAll(this.value)" placeholder="🔍 ค้นหาชื่อ / ชื่อเล่น / รหัสพนักงาน เพื่อดูว่าอยู่รุ่นไหน"
-        style="width:100%;font-family:'Sarabun',sans-serif;font-size:.85rem;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:10px;color:var(--text);box-sizing:border-box" />
-      <div id="searchHint" style="font-size:.72rem;color:var(--muted);margin-top:.35rem;display:none"></div>
+        style="width:100%;font-family:'Sarabun',sans-serif;font-size:.9rem;padding:.75rem 1rem;border:2px solid var(--mg);border-radius:12px;color:var(--text);box-sizing:border-box;box-shadow:0 2px 8px rgba(45,90,39,.08)" />
+      <div id="searchHint" style="font-size:.76rem;color:var(--muted);margin-top:.4rem;display:none"></div>
     </div>
+    <div class="sh"><span class="sbadge sb-g">📋 ทั้งหมด</span><span class="scnt">${allData.length} คน</span></div>
     <div class="cards" id="allCards">${allData.map((p,i)=>{
       const r = getPersonRound(p.id);
-      const col = ROUND_COLORS[Math.min((r||1)-1,3)];
-      const rTag = r ? `<div class="tag ${col.tagOk}">รุ่น ${r}</div>` : `<div class="tag t-mov">ยังไม่จัดรุ่น</div>`;
+      const rTag = r ? `<div class="tag t-ok">รุ่น ${r}</div>` : `<div class="tag t-mov">ยังไม่จัดรุ่น</div>`;
       const searchKey = `${p.name} ${p.nick} ${p.id}`.toLowerCase();
-      return `<div class="all-row" data-key="${searchKey}" data-round="${r||''}">${mkCard(p, i+1, (r?col.cls:"r1"), rTag, Math.min(i*.02,.5))}</div>`;
+      return `<div class="all-row" data-key="${searchKey}" data-round="${r||''}">${mkCard(p, i+1, "r1", rTag, Math.min(i*.02,.5))}</div>`;
     }).join("")}</div>
     <div id="noResult" style="display:none;text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem">ไม่พบรายชื่อที่ค้นหา</div>
   </div>`;
@@ -1086,6 +1099,11 @@ function selectAttRound(r){
 
 function filterAll(q){
   const query = (q||"").trim().toLowerCase();
+  // ถ้ายังไม่ได้อยู่แท็บ "ทั้งหมด" และเริ่มพิมพ์ → สลับไปแท็บทั้งหมดให้อัตโนมัติ
+  if(query && activeTab!=="all"){
+    activeTab="all";
+    activateTab("all");
+  }
   const rows  = document.querySelectorAll("#allCards .all-row");
   const hint  = document.getElementById("searchHint");
   const noRes = document.getElementById("noResult");
