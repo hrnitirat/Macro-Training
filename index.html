@@ -330,8 +330,8 @@ async function loadAttFromAPI(){
 async function saveToAPI(){
   if(!USE_API){ saveLocal(); return; }
   try{
-    await apiGet("setAtt",   { allAtt, allSwapMap });
-    await apiGet("setDates", roundDates);
+    await apiGet("setAtt",   { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
+    await apiGet("setDates", roundDates||{});
     saveLocal(); // backup ใน localStorage ด้วยเสมอ
   }catch(e){
     console.warn("API save failed, saved locally only", e);
@@ -908,8 +908,13 @@ async function pushToSheet(){
   if(!USE_API){ toast("⚠️ ยังไม่มี API URL"); return; }
   if(el) el.innerHTML=`<span style="color:var(--muted)">⏳ กำลัง Push...</span>`;
   try{
-    const r1 = await apiGet("setAtt",   { allAtt, allSwapMap });
-    await apiGet("setDates", roundDates);
+    // กัน undefined — ส่ง object เปล่าถ้าไม่มีข้อมูล
+    const payloadAtt = {
+      allAtt:     allAtt     || {},
+      allSwapMap: allSwapMap || {},
+    };
+    const r1 = await apiGet("setAtt",   payloadAtt);
+    await apiGet("setDates", roundDates || {});
     if(r1 && r1.success){
       if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว</span>`;
       toast("⬆️ Push ขึ้น Sheet สำเร็จ!");
