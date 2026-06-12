@@ -267,8 +267,15 @@ async function apiGet(action, data){
   if(!USE_API) return null;
   let url = `${API_URL}?action=${action}`;
   if(data) url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
-  const res  = await fetch(url);
-  return res.json();
+  const res = await fetch(url, {
+    redirect: "follow",
+    method:   "GET",
+    headers:  { "Content-Type": "application/json" },
+  });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch(e) { console.error("Response was not JSON:", text.slice(0,200)); throw e; }
 }
 
 async function loadAttFromAPI(){
@@ -730,11 +737,12 @@ function buildSettingsPanel(n){
           placeholder="https://script.google.com/macros/s/XXXXX/exec"
           value="${USE_API ? API_URL : localStorage.getItem('apiUrl')||''}" />
       </div>
-      <div style="display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
+      <div style="display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap;align-items:center">
         <button class="btn-save-settings" onclick="saveApiUrl()">💾 บันทึก URL</button>
-        <div style="font-size:.72rem;color:${USE_API?'var(--mg)':'var(--red)'};display:flex;align-items:center;gap:4px">
+        <button onclick="testConnection()" style="padding:.5rem 1rem;border-radius:8px;border:1.5px solid var(--mg);background:#fff;color:var(--mg);font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">🔌 Test Connection</button>
+        <div id="apiStatus" style="font-size:.72rem;color:${USE_API?'var(--mg)':'var(--muted)'};display:flex;align-items:center;gap:4px">
           <div style="width:8px;height:8px;border-radius:50%;background:${USE_API?'var(--mg)':'var(--muted)'};flex-shrink:0"></div>
-          ${USE_API ? "✅ ใช้ Apps Script API" : "⚠️ ยังใช้ localStorage"}
+          ${USE_API ? "✅ มี URL แล้ว — กด Test ก่อนใช้" : "⚠️ ยังใช้ localStorage"}
         </div>
       </div>
     </div>
@@ -831,12 +839,17 @@ function getR1Nick(id){
 }
 
 function saveAll(){
-  // บันทึก localStorage ทันที (sync) ก่อนเสมอ
   saveLocal();
-  toast("💾 บันทึกแล้ว ✓");
-  // ถ้ามี API ก็บันทึกขึ้น Sheets ด้วย (async)
   if(USE_API){
-    saveToAPI().catch(e => console.warn("API save failed:", e));
+    toast("💾 บันทึกแล้ว ✓ (กำลัง sync ขึ้น Sheets...)");
+    saveToAPI()
+      .then(()=> toast("☁️ Sync ขึ้น Google Sheets แล้ว ✓"))
+      .catch(e => {
+        console.warn("API save failed:", e);
+        toast("⚠️ บันทึก local แล้ว แต่ Sheets ล้มเหลว: " + (e.message||e));
+      });
+  } else {
+    toast("💾 บันทึกแล้ว ✓ (local)");
   }
 }
 
