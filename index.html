@@ -325,6 +325,11 @@ async function loadAttFromAPI(){
     if(res.roundDates && Object.keys(res.roundDates).length > 0)
       roundDates = res.roundDates;
 
+    // sync จำนวนรุ่นจาก Sheet (สำคัญ! ให้ทุก browser เห็นรุ่นเท่ากัน)
+    if(res.manualRounds && Number(res.manualRounds) >= 1){
+      manualRounds = Number(res.manualRounds);
+    }
+
     saveLocal();
   }catch(e){ console.warn("API load failed, using localStorage", e); }
 }
@@ -333,8 +338,8 @@ async function saveToAPI(){
   if(!USE_API){ saveLocal(); return; }
   try{
     await apiGet("setAtt",   { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
-    await apiGet("setDates", roundDates||{});
-    saveLocal(); // backup ใน localStorage ด้วยเสมอ
+    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
+    saveLocal();
   }catch(e){
     console.warn("API save failed, saved locally only", e);
     saveLocal();
@@ -766,7 +771,7 @@ async function saveSettings(maxR){
   if(USE_API){
     toast("💾 กำลัง push วันที่ขึ้น Sheet...");
     try{
-      const r = await apiGet("setDates", roundDates||{});
+      const r = await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
       await apiGet("setAtt", { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
       if(r && r.success) toast("☁️ Push วันที่ขึ้น Sheet สำเร็จ ✓");
       else toast("⚠️ Push ไม่สำเร็จ: " + (r && r.error ? r.error : "ไม่ทราบสาเหตุ"));
@@ -913,9 +918,9 @@ async function testConnection(){
     const res = await apiGet("get");
     if(res && (res.allAtt!==undefined || res.roundDates!==undefined)){
       const ver = res.version || "เก่า (ไม่มี version)";
-      const verOk = res.version === "v3";
-      if(el) el.innerHTML=`<span style="color:${verOk?'var(--mg)':'var(--orange)'}">✅ เชื่อมต่อสำเร็จ · Apps Script: ${ver}${verOk?'':' ⚠️ ยังไม่ใช่ v3 — Deploy ใหม่!'}</span>`;
-      toast(verOk ? "✅ API v3 พร้อมใช้!" : "⚠️ ยังเป็น code เก่า — Deploy ใหม่");
+      const verOk = res.version === "v4";
+      if(el) el.innerHTML=`<span style="color:${verOk?'var(--mg)':'var(--orange)'}">✅ เชื่อมต่อสำเร็จ · Apps Script: ${ver}${verOk?'':' ⚠️ ยังไม่ใช่ v4 — Deploy ใหม่!'}</span>`;
+      toast(verOk ? "✅ API v4 พร้อมใช้!" : "⚠️ ยังเป็น code เก่า — Deploy ใหม่");
     } else if(res && res.error){
       if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${res.error}</span>`;
       toast("❌ "+res.error);
@@ -941,7 +946,7 @@ async function pushToSheet(){
       allSwapMap: allSwapMap || {},
     };
     const r1 = await apiGet("setAtt",   payloadAtt);
-    await apiGet("setDates", roundDates || {});
+    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
     if(r1 && r1.success){
       if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว (${r1.version||"?"})</span>`;
       toast("⬆️ Push ขึ้น Sheet สำเร็จ!");
