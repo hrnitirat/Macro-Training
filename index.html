@@ -887,8 +887,10 @@ async function testConnection(){
   try{
     const res = await apiGet("get");
     if(res && (res.allAtt!==undefined || res.roundDates!==undefined)){
-      if(el) el.innerHTML=`<span style="color:var(--mg)">✅ เชื่อมต่อสำเร็จ!</span>`;
-      toast("✅ API ทำงานปกติ");
+      const ver = res.version || "เก่า (ไม่มี version)";
+      const verOk = res.version === "v3";
+      if(el) el.innerHTML=`<span style="color:${verOk?'var(--mg)':'var(--orange)'}">✅ เชื่อมต่อสำเร็จ · Apps Script: ${ver}${verOk?'':' ⚠️ ยังไม่ใช่ v3 — Deploy ใหม่!'}</span>`;
+      toast(verOk ? "✅ API v3 พร้อมใช้!" : "⚠️ ยังเป็น code เก่า — Deploy ใหม่");
     } else if(res && res.error){
       if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${res.error}</span>`;
       toast("❌ "+res.error);
@@ -916,7 +918,7 @@ async function pushToSheet(){
     const r1 = await apiGet("setAtt",   payloadAtt);
     await apiGet("setDates", roundDates || {});
     if(r1 && r1.success){
-      if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว</span>`;
+      if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว (${r1.version||"?"})</span>`;
       toast("⬆️ Push ขึ้น Sheet สำเร็จ!");
     } else {
       if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${r1&&r1.error?r1.error:"ล้มเหลว"}</span>`;
