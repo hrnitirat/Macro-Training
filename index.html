@@ -431,6 +431,16 @@ function roundSlice(r){
   return a[String(r)] || [];
 }
 
+// หาว่าคนคนนี้ (ตาม id) อยู่รุ่นไหน — ตาม assignment จริง (รองรับปิดรับ)
+function getPersonRound(id){
+  const a = getRoundAssignment();
+  const keys = Object.keys(a).map(Number).sort((x,y)=>x-y);
+  for(const r of keys){
+    if((a[String(r)]||[]).some(p=>p.id===id)) return r;
+  }
+  return null;
+}
+
 // ── ปิด/เปิดรับรุ่น ───────────────────────────────────────────────────
 function closeRound(r){
   const members = roundSlice(r);
@@ -633,14 +643,22 @@ function buildPanels(n){
     </div>`;
   }
 
-  // All tab
+  // All tab — เรียงตามลำดับลงทะเบียน + ค้นหาได้
   html += `<div class="panel" id="p-all">
     <div class="sh"><span class="sbadge sb-g">📋 ทั้งหมด</span><span class="scnt">${allData.length} คน</span></div>
-    <div class="cards">${allData.map((p,i)=>{
-      const r = Math.floor(i/ROUND_SIZE)+1;
-      const col = ROUND_COLORS[Math.min(r-1,3)];
-      return mkCard(p, i+1, col.cls, `<div class="tag ${col.tagOk}">รุ่น ${r}</div>`, i*.035);
+    <div style="margin-bottom:.7rem">
+      <input id="searchBox" type="text" oninput="filterAll(this.value)" placeholder="🔍 ค้นหาชื่อ / ชื่อเล่น / รหัสพนักงาน เพื่อดูว่าอยู่รุ่นไหน"
+        style="width:100%;font-family:'Sarabun',sans-serif;font-size:.85rem;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:10px;color:var(--text);box-sizing:border-box" />
+      <div id="searchHint" style="font-size:.72rem;color:var(--muted);margin-top:.35rem;display:none"></div>
+    </div>
+    <div class="cards" id="allCards">${allData.map((p,i)=>{
+      const r = getPersonRound(p.id);
+      const col = ROUND_COLORS[Math.min((r||1)-1,3)];
+      const rTag = r ? `<div class="tag ${col.tagOk}">รุ่น ${r}</div>` : `<div class="tag t-mov">ยังไม่จัดรุ่น</div>`;
+      const searchKey = `${p.name} ${p.nick} ${p.id}`.toLowerCase();
+      return `<div class="all-row" data-key="${searchKey}" data-round="${r||''}">${mkCard(p, i+1, (r?col.cls:"r1"), rTag, Math.min(i*.02,.5))}</div>`;
     }).join("")}</div>
+    <div id="noResult" style="display:none;text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem">ไม่พบรายชื่อที่ค้นหา</div>
   </div>`;
 
   // Att tab
@@ -650,11 +668,6 @@ function buildPanels(n){
   html += `<div class="panel" id="p-settings">${buildSettingsPanel(n)}</div>`;
 
   mc.innerHTML = html;
-
-  // Re-render pickers if any pending
-  if(pendingSwapFor && att[pendingSwapFor]==="swapped"){
-    renderPickerInline(pendingSwapFor);
-  }
 }
 
 function renderCards(data, round){
@@ -1069,6 +1082,34 @@ async function pullFromSheet(){
 function selectAttRound(r){
   selectedAttRound=r; pendingSwapFor=null;
   buildUI(); activateTab("att");
+}
+
+function filterAll(q){
+  const query = (q||"").trim().toLowerCase();
+  const rows  = document.querySelectorAll("#allCards .all-row");
+  const hint  = document.getElementById("searchHint");
+  const noRes = document.getElementById("noResult");
+  let shown = 0, foundRound = null, foundName = "";
+  rows.forEach(row=>{
+    const key = row.getAttribute("data-key")||"";
+    const match = !query || key.indexOf(query)>=0;
+    row.style.display = match ? "" : "none";
+    if(match){
+      shown++;
+      if(query){ foundRound = row.getAttribute("data-round"); foundName = key; }
+    }
+  });
+  // hint
+  if(query && shown===1 && foundRound){
+    hint.style.display = "block";
+    hint.innerHTML = `✅ พบ 1 รายการ — อยู่ <strong style="color:var(--dg)">รุ่นที่ ${foundRound}</strong>`;
+  } else if(query && shown>1){
+    hint.style.display = "block";
+    hint.textContent = `พบ ${shown} รายการ — พิมพ์รหัสพนักงานเพื่อระบุให้แม่นยำขึ้น`;
+  } else {
+    hint.style.display = "none";
+  }
+  noRes.style.display = (query && shown===0) ? "block" : "none";
 }
 
 function toast(msg){
