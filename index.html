@@ -882,6 +882,67 @@ function saveApiUrl(){
   }, 1200);
 }
 
+async function testConnection(){
+  const el = document.getElementById("apiStatus");
+  if(!USE_API){ if(el) el.innerHTML=`<span style="color:var(--red)">⚠️ ยังไม่มี API URL</span>`; toast("⚠️ ยังไม่มี API URL"); return; }
+  if(el) el.innerHTML=`<span style="color:var(--muted)">⏳ กำลังทดสอบ...</span>`;
+  try{
+    const res = await apiGet("get");
+    if(res && (res.allAtt!==undefined || res.roundDates!==undefined)){
+      if(el) el.innerHTML=`<span style="color:var(--mg)">✅ เชื่อมต่อสำเร็จ!</span>`;
+      toast("✅ API ทำงานปกติ");
+    } else if(res && res.error){
+      if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${res.error}</span>`;
+      toast("❌ "+res.error);
+    } else {
+      if(el) el.innerHTML=`<span style="color:var(--orange)">⚠️ format ผิด: ${JSON.stringify(res).slice(0,60)}</span>`;
+      toast("⚠️ format ผิด");
+    }
+  }catch(e){
+    if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${e.message||e}</span>`;
+    toast("❌ เชื่อมต่อไม่ได้: "+(e.message||e));
+    console.error("test failed:", e);
+  }
+}
+
+async function pushToSheet(){
+  const el = document.getElementById("apiStatus");
+  if(!USE_API){ toast("⚠️ ยังไม่มี API URL"); return; }
+  if(el) el.innerHTML=`<span style="color:var(--muted)">⏳ กำลัง Push...</span>`;
+  try{
+    const r1 = await apiGet("setAtt",   { allAtt, allSwapMap });
+    await apiGet("setDates", roundDates);
+    if(r1 && r1.success){
+      if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว</span>`;
+      toast("⬆️ Push ขึ้น Sheet สำเร็จ!");
+    } else {
+      if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${r1&&r1.error?r1.error:"ล้มเหลว"}</span>`;
+      toast("❌ Push ล้มเหลว");
+    }
+  }catch(e){
+    if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${e.message||e}</span>`;
+    toast("❌ Push ไม่สำเร็จ: "+(e.message||e));
+    console.error("push failed:", e);
+  }
+}
+
+async function pullFromSheet(){
+  const el = document.getElementById("apiStatus");
+  if(!USE_API){ toast("⚠️ ยังไม่มี API URL"); return; }
+  if(!confirm("ดึงข้อมูลจาก Sheet มาทับในเครื่องนี้?\n(ข้อมูลที่ยังไม่ Push จะหาย)")) return;
+  if(el) el.innerHTML=`<span style="color:var(--muted)">⏳ กำลัง Pull...</span>`;
+  try{
+    await loadAttFromAPI();
+    buildUI(); go("settings");
+    if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Pull สำเร็จ!</span>`;
+    toast("⬇️ Pull จาก Sheet สำเร็จ!");
+  }catch(e){
+    if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${e.message||e}</span>`;
+    toast("❌ Pull ไม่สำเร็จ");
+    console.error("pull failed:", e);
+  }
+}
+
 function selectAttRound(r){
   selectedAttRound=r; pendingSwapFor=null;
   buildUI(); activateTab("att");
