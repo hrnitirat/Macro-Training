@@ -265,17 +265,26 @@ let activeTab = "r1";
 // ── API helpers ──────────────────────────────────────────────────────
 async function apiGet(action, data){
   if(!USE_API) return null;
-  let url = `${API_URL}?action=${action}`;
-  if(data) url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
-  const res = await fetch(url, {
-    redirect: "follow",
-    method:   "GET",
-    // ห้ามใส่ custom headers เพราะจะ trigger CORS preflight ที่ Apps Script ไม่รองรับ
-  });
+  let res;
+  if(data){
+    // ส่งข้อมูลด้วย POST (กัน URL ยาวเกิน limit) — ใช้ text/plain เลี่ยง CORS preflight
+    res = await fetch(`${API_URL}?action=${action}`, {
+      method:   "POST",
+      redirect: "follow",
+      headers:  { "Content-Type": "text/plain;charset=utf-8" },
+      body:     JSON.stringify(data),
+    });
+  } else {
+    // อ่านข้อมูลด้วย GET ธรรมดา
+    res = await fetch(`${API_URL}?action=${action}`, {
+      method:   "GET",
+      redirect: "follow",
+    });
+  }
   if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
   try { return JSON.parse(text); }
-  catch(e) { console.error("Response was not JSON:", text.slice(0,200)); throw e; }
+  catch(e){ console.error("Response not JSON:", text.slice(0,200)); throw new Error("Response ไม่ใช่ JSON — ตรวจสอบว่า Deploy Apps Script ใหม่แล้ว"); }
 }
 
 async function loadAttFromAPI(){
