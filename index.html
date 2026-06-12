@@ -238,6 +238,8 @@ let allData          = [];
 let allAtt           = JSON.parse(localStorage.getItem("allAtt_v2")     || "{}");
 let allSwapMap       = JSON.parse(localStorage.getItem("allSwapMap_v2") || "{}");
 let selectedAttRound = 1;
+const HR_PASSWORD = "Hr123456789*";
+let hrUnlocked = sessionStorage.getItem("hrUnlocked") === "yes";
 let manualRounds     = parseInt(localStorage.getItem("manualRounds") || "1");
 
 // Migrate legacy R1 data
@@ -754,16 +756,27 @@ function buildSettingsPanel(n){
   </div>`;
 }
 
-function saveSettings(maxR){
+async function saveSettings(maxR){
   for(let r=1;r<=maxR;r++){
     const d = document.getElementById(`rdate-${r}`)?.value||"";
     const m = document.getElementById(`rmeta-${r}`)?.value||"";
     roundDates[r] = { date: d, meta: m };
   }
   saveLocal();
-  if(USE_API) saveToAPI().catch(e=>console.warn(e));
+  if(USE_API){
+    toast("💾 กำลัง push วันที่ขึ้น Sheet...");
+    try{
+      const r = await apiGet("setDates", roundDates||{});
+      await apiGet("setAtt", { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
+      if(r && r.success) toast("☁️ Push วันที่ขึ้น Sheet สำเร็จ ✓");
+      else toast("⚠️ Push ไม่สำเร็จ: " + (r && r.error ? r.error : "ไม่ทราบสาเหตุ"));
+    }catch(e){
+      toast("⚠️ Push ล้มเหลว: " + (e.message||e));
+    }
+  } else {
+    toast("💾 บันทึกแล้ว (local เท่านั้น)");
+  }
   buildUI(); go("settings");
-  toast("💾 บันทึกการตั้งค่าแล้ว ✓");
 }
 
 // ── Att actions ───────────────────────────────────────────────────────
@@ -856,6 +869,18 @@ function saveAll(){
 
 // ── Tab switch ────────────────────────────────────────────────────────
 function go(id){
+  // ล็อกหน้า HR (เช็คชื่อ + ตั้งค่า) ต้องใส่รหัสก่อน
+  if((id==="att" || id==="settings") && !hrUnlocked){
+    const pw = prompt("🔒 หน้านี้สำหรับ HR เท่านั้น\nกรุณาใส่รหัสผ่าน:");
+    if(pw === null) return;            // กด Cancel
+    if(pw !== HR_PASSWORD){
+      toast("❌ รหัสผ่านไม่ถูกต้อง");
+      return;
+    }
+    hrUnlocked = true;
+    sessionStorage.setItem("hrUnlocked","yes");
+    toast("🔓 ปลดล็อกหน้า HR แล้ว");
+  }
   activeTab=id;
   activateTab(id);
 }
