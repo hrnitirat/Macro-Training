@@ -265,22 +265,11 @@ let activeTab = "r1";
 // ── API helpers ──────────────────────────────────────────────────────
 async function apiGet(action, data){
   if(!USE_API) return null;
-  let res;
-  if(data){
-    // ส่งข้อมูลด้วย POST (กัน URL ยาวเกิน limit) — ใช้ text/plain เลี่ยง CORS preflight
-    res = await fetch(`${API_URL}?action=${action}`, {
-      method:   "POST",
-      redirect: "follow",
-      headers:  { "Content-Type": "text/plain;charset=utf-8" },
-      body:     JSON.stringify(data),
-    });
-  } else {
-    // อ่านข้อมูลด้วย GET ธรรมดา
-    res = await fetch(`${API_URL}?action=${action}`, {
-      method:   "GET",
-      redirect: "follow",
-    });
-  }
+  // ส่งทุกอย่างผ่าน GET (รวม data ใน query) เพื่อใช้ doGet ที่ deploy อยู่แล้ว
+  // เลี่ยง POST เพราะ Apps Script + CORS ทำให้ "Failed to fetch" บ่อย
+  let url = `${API_URL}?action=${action}`;
+  if(data) url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
+  const res = await fetch(url, { method:"GET", redirect:"follow" });
   if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
   try { return JSON.parse(text); }
