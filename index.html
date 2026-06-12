@@ -241,6 +241,7 @@ let selectedAttRound = 1;
 const HR_PASSWORD = "Hr123456789*";
 let hrUnlocked = sessionStorage.getItem("hrUnlocked") === "yes";
 let manualRounds     = parseInt(localStorage.getItem("manualRounds") || "1");
+let closedRounds     = JSON.parse(localStorage.getItem("closedRounds") || "{}");
 
 // Migrate legacy R1 data
 (function(){
@@ -329,6 +330,15 @@ async function loadAttFromAPI(){
     if(res.manualRounds && Number(res.manualRounds) >= 1){
       manualRounds = Number(res.manualRounds);
     }
+    // sync รุ่นที่ปิดรับ
+    if(res.closedRounds && typeof res.closedRounds === "object"){
+      const fresh = {};
+      Object.keys(res.closedRounds).forEach(r=>{
+        const ids = (res.closedRounds[r]||[]).map(id=>String(id).padStart(4,"0"));
+        if(ids.length) fresh[r] = ids;
+      });
+      closedRounds = fresh;
+    }
 
     saveLocal();
   }catch(e){ console.warn("API load failed, using localStorage", e); }
@@ -338,7 +348,7 @@ async function saveToAPI(){
   if(!USE_API){ saveLocal(); return; }
   try{
     await apiGet("setAtt",   { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
-    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
+    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds, closedRounds: closedRounds||{} });
     saveLocal();
   }catch(e){
     console.warn("API save failed, saved locally only", e);
@@ -352,6 +362,7 @@ function saveLocal(){
   localStorage.setItem("allSwapMap_v2", JSON.stringify(allSwapMap));
   localStorage.setItem("roundDates",    JSON.stringify(roundDates));
   localStorage.setItem("manualRounds",  String(manualRounds));
+  localStorage.setItem("closedRounds",  JSON.stringify(closedRounds));
 }
 
 // ── Round colors ─────────────────────────────────────────────────────
@@ -381,7 +392,72 @@ function removeLastRound(){
   go("settings");
   toast(`ลบรุ่น ${manualRounds+1} แล้ว`);
 }
-function roundSlice(r){ return allData.slice((r-1)*ROUND_SIZE, r*ROUND_SIZE); }
+function roundClosed(r){ return !!closedRounds[String(r)]; }
+
+// คำนวณว่าใครอยู่รุ่นไหน — รองรับการ "ปิดรับ" (freeze รายชื่อ)
+function getRoundAssignment(){
+  const byId = {};
+  allData.forEach(p => { byId[p.id] = p; });
+
+  // id ที่ถูก freeze ในรุ่นที่ปิดรับแล้ว
+  const frozenIds = new Set();
+  Object.keys(closedRounds).forEach(r => {
+    (closedRounds[r]||[]).forEach(id => frozenIds.add(String(id).padStart(4,"0")));
+  });
+
+  const assignment = {};
+  // รุ่นที่ปิดรับ = ใช้รายชื่อที่ freeze ไว้
+  Object.keys(closedRounds).forEach(r => {
+    assignment[r] = (closedRounds[r]||[])
+      .map(id => byId[String(id).padStart(4,"0")])
+      .filter(Boolean);
+  });
+
+  // คนที่เหลือ (ไม่อยู่ในรุ่นที่ปิด) เรียงตามลำดับลงทะเบียน
+  const remaining = allData.filter(p => !frozenIds.has(p.id));
+
+  // เติมเฉพาะรุ่นที่ยังเปิดรับ ทีละ ROUND_SIZE คน
+  let idx = 0;
+  for(let r=1; r<=manualRounds; r++){
+    if(closedRounds[String(r)]) continue;
+    assignment[String(r)] = remaining.slice(idx, idx+ROUND_SIZE);
+    idx += ROUND_SIZE;
+  }
+  return assignment;
+}
+
+function roundSlice(r){
+  const a = getRoundAssignment();
+  return a[String(r)] || [];
+}
+
+// ── ปิด/เปิดรับรุ่น ───────────────────────────────────────────────────
+function closeRound(r){
+  const members = roundSlice(r);
+  const cur = members.length;
+  const ans = prompt(`🔒 ปิดรับรุ่น ${r}\n\nยืนยันจำนวนผู้เข้าร่วมรุ่นนี้กี่คน?\n(ปัจจุบัน ${cur} คน — ลดจำนวนได้ถ้ามีคนลงเกินมา คนที่ลงทีหลังจะย้ายไปรุ่นถัดไป)`, String(cur));
+  if(ans === null) return;
+  let n = parseInt(ans);
+  if(isNaN(n)) n = cur;
+  n = Math.max(0, Math.min(cur, n));
+  closedRounds[String(r)] = members.slice(0, n).map(p => p.id);
+  saveCloseState();
+  toast(`🔒 ปิดรับรุ่น ${r} แล้ว (${n} คน)`);
+  buildUI(); go("settings");
+}
+
+function openRound(r){
+  if(!confirm(`เปิดรับรุ่น ${r} อีกครั้ง?\nคนที่ลงทะเบียนใหม่จะกลับมาเติมรุ่นนี้ได้`)) return;
+  delete closedRounds[String(r)];
+  saveCloseState();
+  toast(`🔓 เปิดรับรุ่น ${r} แล้ว`);
+  buildUI(); go("settings");
+}
+
+function saveCloseState(){
+  localStorage.setItem("closedRounds", JSON.stringify(closedRounds));
+  if(USE_API) saveToAPI().catch(e=>console.warn(e));
+}
 
 // รายชื่อจริงในรุ่น r (รวมคนที่ย้ายมาจากรุ่นก่อน + ลบคนที่ขยับขึ้นรุ่นก่อน)
 function getRoundEffective(r){
@@ -516,7 +592,7 @@ function buildTabs(n){
   const roundEmojis = ["✅","🕐","🔵","🟣"];
   let tabs = "";
   for(let r=1;r<=n;r++){
-    tabs += `<button class="tab" data-tab="r${r}" onclick="go('r${r}')">${roundEmojis[r-1]||"⏳"} รุ่น ${r}</button>`;
+    tabs += `<button class="tab" data-tab="r${r}" onclick="go('r${r}')">${roundClosed(r)?"🔒":(roundEmojis[r-1]||"⏳")} รุ่น ${r}</button>`;
   }
   tabs += `<button class="tab" data-tab="all" onclick="go('all')">📋 ทั้งหมด</button>`;
   tabs += `<button class="tab hr" data-tab="att" onclick="go('att')">📝 เช็คชื่อ (HR)</button>`;
@@ -535,6 +611,7 @@ function buildPanels(n){
     const cfg  = roundDates[r] || {date:"ยังไม่กำหนดวันที่",meta:"09.30–15.00 น. · ห้องประชุม 1"};
     const pct  = Math.min(100, Math.round(data.length/ROUND_SIZE*100));
     const isFull = roundSlice(r).length >= ROUND_SIZE;
+    const rClosed = roundClosed(r);
 
     html += `<div class="panel" id="p-r${r}">
       <div class="rcard" style="border-left-color:${col.color}">
@@ -548,7 +625,7 @@ function buildPanels(n){
         <div class="cap-bw">
           <div class="cap-row"><span>รุ่นที่ ${r}</span><span>${data.length} / ${ROUND_SIZE} ที่นั่ง</span></div>
           <div class="cap-bar"><div class="cap-fill ${col.fill}" style="width:${pct}%"></div></div>
-          <div class="cap-st" style="color:${col.color}">${isFull?`✅ รุ่น ${r} เต็มแล้ว`:`🟡 รับได้อีก ${ROUND_SIZE-data.length} ที่นั่ง`}</div>
+          <div class="cap-st" style="color:${rClosed?'var(--orange)':col.color}">${rClosed?`🔒 ปิดรับแล้ว (${data.length} คน)`:(isFull?`✅ รุ่น ${r} เต็มแล้ว`:`🟡 รับได้อีก ${ROUND_SIZE-data.length} ที่นั่ง`)}</div>
         </div>
       </div>
       <div class="sh"><span class="sbadge ${col.badge}">รุ่นที่ ${r}</span><span class="scnt">${data.length} คน</span></div>
@@ -712,8 +789,12 @@ function buildSettingsPanel(n){
   for(let r=1;r<=maxR;r++){
     const cfg = roundDates[r]||{date:"",meta:"09.30–15.00 น. · ห้องประชุม 1"};
     const attCnt = Object.keys(attFor(r)).length;
-    rows += `<div class="round-settings-group">
-      <div class="round-settings-header">รุ่นที่ ${r} ${attCnt>0?"✅ (มีข้อมูลเช็คชื่อแล้ว)":""}</div>
+    const closed = roundClosed(r);
+    const memberCnt = roundSlice(r).length;
+    rows += `<div class="round-settings-group" style="${closed?'border-left:3px solid var(--orange);padding-left:.6rem':''}">
+      <div class="round-settings-header">
+        รุ่นที่ ${r} ${closed?`<span style="color:var(--orange)">🔒 ปิดรับแล้ว (${memberCnt} คน)</span>`:`<span style="color:var(--muted);font-weight:400">· เปิดรับอยู่ (${memberCnt} คน)</span>`} ${attCnt>0?"· ✅ มีเช็คชื่อ":""}
+      </div>
       <div class="settings-row">
         <div class="settings-label">วันที่อบรม</div>
         <input class="settings-input" id="rdate-${r}" placeholder="เช่น วันเสาร์ที่ 25 เมษายน 2569" value="${cfg.date||""}">
@@ -721,6 +802,12 @@ function buildSettingsPanel(n){
       <div class="settings-row">
         <div class="settings-label">ข้อมูลเพิ่มเติม</div>
         <input class="settings-input" id="rmeta-${r}" placeholder="เช่น 09.30–15.00 น. · ห้องประชุม 1" value="${cfg.meta||""}">
+      </div>
+      <div class="settings-row">
+        ${closed
+          ? `<button onclick="openRound(${r})" style="padding:.4rem .9rem;border-radius:8px;border:1.5px solid var(--orange);background:#fff;color:var(--orange);font-family:'Sarabun',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer">🔓 เปิดรับรุ่น ${r} อีกครั้ง</button>`
+          : `<button onclick="closeRound(${r})" style="padding:.4rem .9rem;border-radius:8px;border:none;background:var(--orange);color:#fff;font-family:'Sarabun',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer">🔒 ปิดรับรุ่น ${r}</button>`
+        }
       </div>
     </div>`;
   }
@@ -756,7 +843,8 @@ function buildSettingsPanel(n){
     <div class="settings-note">
       💡 <strong>⬆️ Push</strong> = ส่งข้อมูลในเครื่องนี้ขึ้น Google Sheet (ใช้เมื่อข้อมูลในเครื่องนี้ถูกต้องล่าสุด)<br>
       💡 <strong>⬇️ Pull</strong> = ดึงข้อมูลจาก Sheet มาทับในเครื่องนี้ (ใช้เมื่ออยากได้ข้อมูลล่าสุดจากคนอื่น)<br>
-      💡 กด "เพิ่มรุ่น" เมื่อต้องการเปิดรุ่นใหม่ — แบ่งตามลำดับ ${ROUND_SIZE} คน/รุ่น
+      💡 กด "เพิ่มรุ่น" เมื่อต้องการเปิดรุ่นใหม่ — แบ่งตามลำดับ ${ROUND_SIZE} คน/รุ่น<br>
+      🔒 <strong>ปิดรับรุ่น</strong> = freeze รายชื่อรุ่นนั้น คนที่ลงทะเบียนใหม่จะข้ามไปรุ่นถัดไปแทน (ใช้เมื่อรุ่นนั้นจัดไปแล้ว)
     </div>
   </div>`;
 }
@@ -771,7 +859,7 @@ async function saveSettings(maxR){
   if(USE_API){
     toast("💾 กำลัง push วันที่ขึ้น Sheet...");
     try{
-      const r = await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
+      const r = await apiGet("setDates", { roundDates: roundDates||{}, manualRounds, closedRounds: closedRounds||{} });
       await apiGet("setAtt", { allAtt: allAtt||{}, allSwapMap: allSwapMap||{} });
       if(r && r.success) toast("☁️ Push วันที่ขึ้น Sheet สำเร็จ ✓");
       else toast("⚠️ Push ไม่สำเร็จ: " + (r && r.error ? r.error : "ไม่ทราบสาเหตุ"));
@@ -918,9 +1006,9 @@ async function testConnection(){
     const res = await apiGet("get");
     if(res && (res.allAtt!==undefined || res.roundDates!==undefined)){
       const ver = res.version || "เก่า (ไม่มี version)";
-      const verOk = res.version === "v4";
-      if(el) el.innerHTML=`<span style="color:${verOk?'var(--mg)':'var(--orange)'}">✅ เชื่อมต่อสำเร็จ · Apps Script: ${ver}${verOk?'':' ⚠️ ยังไม่ใช่ v4 — Deploy ใหม่!'}</span>`;
-      toast(verOk ? "✅ API v4 พร้อมใช้!" : "⚠️ ยังเป็น code เก่า — Deploy ใหม่");
+      const verOk = res.version === "v5";
+      if(el) el.innerHTML=`<span style="color:${verOk?'var(--mg)':'var(--orange)'}">✅ เชื่อมต่อสำเร็จ · Apps Script: ${ver}${verOk?'':' ⚠️ ยังไม่ใช่ v5 — Deploy ใหม่!'}</span>`;
+      toast(verOk ? "✅ API v5 พร้อมใช้!" : "⚠️ ยังเป็น code เก่า — Deploy ใหม่");
     } else if(res && res.error){
       if(el) el.innerHTML=`<span style="color:var(--red)">❌ ${res.error}</span>`;
       toast("❌ "+res.error);
@@ -946,7 +1034,7 @@ async function pushToSheet(){
       allSwapMap: allSwapMap || {},
     };
     const r1 = await apiGet("setAtt",   payloadAtt);
-    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds });
+    await apiGet("setDates", { roundDates: roundDates||{}, manualRounds, closedRounds: closedRounds||{} });
     if(r1 && r1.success){
       if(el) el.innerHTML=`<span style="color:var(--mg)">✅ Push สำเร็จ! ${r1.saved} แถว (${r1.version||"?"})</span>`;
       toast("⬆️ Push ขึ้น Sheet สำเร็จ!");
