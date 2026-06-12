@@ -739,7 +739,9 @@ function buildSettingsPanel(n){
       </div>
       <div style="display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap;align-items:center">
         <button class="btn-save-settings" onclick="saveApiUrl()">💾 บันทึก URL</button>
-        <button onclick="testConnection()" style="padding:.5rem 1rem;border-radius:8px;border:1.5px solid var(--mg);background:#fff;color:var(--mg);font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">🔌 Test Connection</button>
+        <button onclick="testConnection()" style="padding:.5rem 1rem;border-radius:8px;border:1.5px solid var(--mg);background:#fff;color:var(--mg);font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">🔌 Test</button>
+        <button onclick="pushToSheet()" style="padding:.5rem 1rem;border-radius:8px;border:none;background:var(--mg);color:#fff;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">⬆️ Push ขึ้น Sheet</button>
+        <button onclick="pullFromSheet()" style="padding:.5rem 1rem;border-radius:8px;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">⬇️ Pull จาก Sheet</button>
         <div id="apiStatus" style="font-size:.72rem;color:${USE_API?'var(--mg)':'var(--muted)'};display:flex;align-items:center;gap:4px">
           <div style="width:8px;height:8px;border-radius:50%;background:${USE_API?'var(--mg)':'var(--muted)'};flex-shrink:0"></div>
           ${USE_API ? "✅ มี URL แล้ว — กด Test ก่อนใช้" : "⚠️ ยังใช้ localStorage"}
@@ -747,8 +749,9 @@ function buildSettingsPanel(n){
       </div>
     </div>
     <div class="settings-note">
-      💡 กด "เพิ่มรุ่น" เมื่อต้องการเปิดรุ่นใหม่ — ระบบจะสร้างแท็บและหน้าเช็คชื่อให้อัตโนมัติ<br>
-      ข้อมูลผู้ลงทะเบียนในแต่ละรุ่นแบ่งตามลำดับ ${ROUND_SIZE} คน/รุ่น
+      💡 <strong>⬆️ Push</strong> = ส่งข้อมูลในเครื่องนี้ขึ้น Google Sheet (ใช้เมื่อข้อมูลในเครื่องนี้ถูกต้องล่าสุด)<br>
+      💡 <strong>⬇️ Pull</strong> = ดึงข้อมูลจาก Sheet มาทับในเครื่องนี้ (ใช้เมื่ออยากได้ข้อมูลล่าสุดจากคนอื่น)<br>
+      💡 กด "เพิ่มรุ่น" เมื่อต้องการเปิดรุ่นใหม่ — แบ่งตามลำดับ ${ROUND_SIZE} คน/รุ่น
     </div>
   </div>`;
 }
